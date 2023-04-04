@@ -40,24 +40,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
-      <change beforePath="$PROJECT_DIR$/Examples/Monocular-Inertial/mono_inertial_euroc.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular-Inertial/mono_inertial_euroc.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_kitti_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_kitti_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/RGB-D/rgbd_tum_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/RGB-D/rgbd_tum_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo/stereo_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo/stereo_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo/stereo_kitti_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo/stereo_kitti_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo/stereo_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo/stereo_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImuTypes.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImuTypes.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/G2oTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/G2oTypes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Tracking.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Tracking.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/G2oTypes.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/G2oTypes.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/System.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/System.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -95,6 +82,7 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;cmake.loaded.for.project&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/xinyu/workspace/360/OFei-RGB/rkaiq_3A/my_rkaiq_3A_server/CMakeLists.txt&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.配色方案字体&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.29689702&quot;,
@@ -276,7 +264,17 @@
       <updated>1678845619507</updated>
       <workItem from="1678845622017" duration="17321000" />
       <workItem from="1678885155224" duration="6110000" />
-      <workItem from="1678929438944" duration="4601000" />
+      <workItem from="1678929438944" duration="9641000" />
+      <workItem from="1679038564709" duration="1448000" />
+      <workItem from="1679277734540" duration="5727000" />
+      <workItem from="1679317453310" duration="126000" />
+      <workItem from="1679365087339" duration="14883000" />
+      <workItem from="1679924923625" duration="1187000" />
+      <workItem from="1679968718760" duration="2797000" />
+      <workItem from="1680512289085" duration="538000" />
+      <workItem from="1680528067800" duration="991000" />
+      <workItem from="1680529085259" duration="1288000" />
+      <workItem from="1680573480914" duration="794000" />
     </task>
     <servers />
   </component>

@@ -229,6 +229,7 @@ protected:
     // Reset IMU biases and compute frame velocity
     void ResetFrameIMU();
 
+    // 在
     bool mbMapUpdated;
 
     // Imu preintegration from last frame
@@ -312,7 +313,7 @@ protected:
     // For RGB-D inputs only. For some datasets (e.g. TUM) the depthmap values are scaled.
     float mDepthMapFactor;
 
-    //Current matches in frame
+    // Current matches in frame
     int mnMatchesInliers;
 
     //Last Frame, KeyFrame and Relocalisation Info

@@ -415,17 +415,17 @@ int Optimizer::PoseOptimization(Frame *pFrame)
  */
 int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit)
 {
-  // 1. 创建g2o优化器，初始化顶点和边
-  // 构建一个稀疏求解器
-  g2o::SparseOptimizer optimizer;
-  g2o::BlockSolverX::LinearSolverType *linearSolver;
-
+  // step 1 : 构建G2O优化器
+  // (1) 构建线性求解器和块求解器
   // 使用dense的求解器，（常见非dense求解器有cholmod线性求解器和shur补线性求解器）
+  g2o::BlockSolverX::LinearSolverType *linearSolver;
   linearSolver = new g2o::LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>();
-
   g2o::BlockSolverX *solver_ptr = new g2o::BlockSolverX(linearSolver);
-  // 使用高斯牛顿求解器
-  g2o::OptimizationAlgorithmGaussNewton *solver = new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
+  // (2) 使用块求解器构建高斯牛顿的求解器
+  g2o::OptimizationAlgorithmGaussNewton *solver =
+      new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
+  // (3) 构建优化问题
+  g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
   optimizer.setAlgorithm(solver);
 
@@ -435,9 +435,8 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
   //上面两项的和，即参与优化的地图点总数目
   int nInitialCorrespondences = 0;
 
-  // Set Frame vertex
-  // 2. 确定节点
-  // 当前帧的位姿，旋转+平移，6-dim
+  // step 2 : 添加优化器的顶点 (Set Frame vertex) 共15维
+  // (1）当前帧的 pose (rotation + trans) 6-dim
   VertexPose *VP = new VertexPose(pFrame);
   VP->setId(0);
   VP->setFixed(false);
@@ -457,6 +456,7 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
   VA->setId(3);
   VA->setFixed(false);
   optimizer.addVertex(VA);
+
   // setFixed(false)这个设置使以上四个顶点（15个参数）在优化时更新
 
   // Set MapPoint vertices
@@ -476,9 +476,9 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
   vnIndexEdgeMono.reserve(N);
   vnIndexEdgeStereo.reserve(N);
 
-  // 自由度为2的卡方分布，显著性水平为0.05，对应的临界阈值5.991
+  // 自由度为2的卡方分布，显著性水平为 0.05，对应的临界阈值 5.991
   const float thHuberMono = sqrt(5.991);
-  // 自由度为3的卡方分布，显著性水平为0.05，对应的临界阈值7.815
+  // 自由度为3的卡方分布，显著性水平为 0.05，对应的临界阈值 7.815
   const float thHuberStereo = sqrt(7.815);
 
   {
@@ -493,18 +493,20 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
       {
         cv::KeyPoint kpUn;
 
-        // Left monocular observation
-        // 这里说的Left monocular包含两种情况：1.单目情况 2.双目情况下的左目
+        // 这里说的 Left monocular包含两种情况：1.单目情况 2.双目情况下的左目
         if ((!bRight && pFrame->mvuRight[i] < 0) || i < Nleft)
         {
-          // 如果是双目情况下的左目
+          // 如果是双目情况下的左目,使用未畸变校正的特征点 ？
           if (i < Nleft) // pair left-right
-            //使用未畸变校正的特征点
+          {
             kpUn = pFrame->mvKeys[i];
-            // 如果是单目
+          }
           else
-            // 使用畸变校正过的特征点
+          {
+            // 如果是单目，使用畸变校正过的特征点
             kpUn = pFrame->mvKeysUn[i];
+          }
+
 
           // 单目地图点计数增加
           nInitialMonoCorrespondences++;
