@@ -89,7 +89,10 @@ int main(int argc, char **argv)
   }
 
   // Create SLAM system. It initializes all system threads and gets ready to process frames.
-  ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::IMU_MONOCULAR,true);
+  ORB_SLAM3::System SLAM(argv[1],
+                         argv[2],
+                         ORB_SLAM3::System::IMU_MONOCULAR,
+                         true);
 
   ImuGrabber imugb;
   ImageGrabber igb(&SLAM,&imugb,bEqual); // TODO
@@ -98,8 +101,14 @@ int main(int argc, char **argv)
   // ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
   // ros::Subscriber sub_img0 = n.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage,&igb);
   // 以下为EUROC
-  ros::Subscriber sub_imu = n.subscribe("/imu0", 1000, &ImuGrabber::GrabImu, &imugb); 
-  ros::Subscriber sub_img0 = n.subscribe("/cam0/image_raw", 100, &ImageGrabber::GrabImage,&igb);
+  ros::Subscriber sub_imu = n.subscribe("/camera/imu",
+                                        1000,
+                                        &ImuGrabber::GrabImu,
+                                        &imugb);
+  ros::Subscriber sub_img0 = n.subscribe("/camera/color/image_raw",
+                                         100,
+                                         &ImageGrabber::GrabImage,
+                                         &igb);
 
   std::thread sync_thread(&ImageGrabber::SyncWithImu,&igb);
 

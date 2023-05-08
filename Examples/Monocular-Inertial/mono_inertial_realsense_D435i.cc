@@ -208,7 +208,6 @@ int main(int argc, char **argv) {
 
             while(v_gyro_timestamp.size() > v_accel_timestamp_sync.size())
             {
-
                 int index = v_accel_timestamp_sync.size();
                 double target_time = v_gyro_timestamp[index];
 

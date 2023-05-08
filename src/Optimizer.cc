@@ -481,9 +481,10 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
   // 自由度为3的卡方分布，显著性水平为 0.05，对应的临界阈值 7.815
   const float thHuberStereo = sqrt(7.815);
 
+  // step 3 : 添加的医院便的的缓存的的
   {
     // 锁定地图点。由于需要使用地图点来构造顶点和边,因此不希望在构造的过程中部分地图点被改写造成不一致甚至是段错误
-    // 3. 投影边
+
     unique_lock<mutex> lock(MapPoint::mGlobalMutex);
 
     for (int i = 0; i < N; i++)
@@ -497,61 +498,46 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
         if ((!bRight && pFrame->mvuRight[i] < 0) || i < Nleft)
         {
           // 如果是双目情况下的左目,使用未畸变校正的特征点 ？
-          if (i < Nleft) // pair left-right
-          {
+          if (i < Nleft){
+            // // pair left-right
             kpUn = pFrame->mvKeys[i];
-          }
-          else
-          {
+          }else{
             // 如果是单目，使用畸变校正过的特征点
             kpUn = pFrame->mvKeysUn[i];
           }
-
-
           // 单目地图点计数增加
-          nInitialMonoCorrespondences++;
+          nInitialMonoCorrespondences ++;
           // 当前地图点默认设置为不是外点
           pFrame->mvbOutlier[i] = false;
-
           Eigen::Matrix<double, 2, 1> obs;
           obs << kpUn.pt.x, kpUn.pt.y;
-
-          // 第一种边(视觉重投影约束)：地图点投影到该帧图像的坐标与特征点坐标偏差尽可能小
+          // 第一种边 (视觉重投影约束)：地图点投影到该帧图像的坐标与特征点坐标偏差尽可能小
           EdgeMonoOnlyPose *e = new EdgeMonoOnlyPose(pMP->GetWorldPos(), 0);
-
           // 将位姿作为第一个顶点
           e->setVertex(0, VP);
-
           // 设置观测值，即去畸变后的像素坐标
           e->setMeasurement(obs);
-
-          // Add here uncerteinty
-          // 获取不确定度，这里调用uncertainty2返回固定值1.0
+          // 获取不确定度，这里调用uncertainty2返回固定值 1.0
           // ?这里的1.0是作为缺省值的意思吗？是否可以根据对视觉信息的信任度动态修改这个值，比如标定的误差？
           const float unc2 = pFrame->mpCamera->uncertainty2(obs);
-
           // invSigma2 = (Inverse(协方差矩阵))^2，表明该约束在各个维度上的可信度
-          //  图像金字塔层数越高，可信度越差
+          // 图像金字塔层数越高，可信度越差
           const float invSigma2 = pFrame->mvInvLevelSigma2[kpUn.octave] / unc2;
           // 设置该约束的信息矩阵
           e->setInformation(Eigen::Matrix2d::Identity() * invSigma2);
-
           g2o::RobustKernelHuber *rk = new g2o::RobustKernelHuber;
           // 设置鲁棒核函数，避免其误差的平方项出现数值过大的增长 注：后续在优化2次后会用e->setRobustKernel(0)禁掉鲁棒核函数
           e->setRobustKernel(rk);
-
           // 重投影误差的自由度为2，设置对应的卡方阈值
           rk->setDelta(thHuberMono);
-
           // 将第一种边加入优化器
           optimizer.addEdge(e);
-
           // 将第一种边加入vpEdgesMono
           vpEdgesMono.push_back(e);
           // 将对应的特征点索引加入vnIndexEdgeMono
           vnIndexEdgeMono.push_back(i);
         }
-          // Stereo observation
+        // Stereo observation
         else if (!bRight)
         {
           nInitialStereoCorrespondences++;
@@ -563,13 +549,11 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
           obs << kpUn.pt.x, kpUn.pt.y, kp_ur;
 
           EdgeStereoOnlyPose *e = new EdgeStereoOnlyPose(pMP->GetWorldPos());
-
           e->setVertex(0, VP);
           e->setMeasurement(obs);
 
           // Add here uncerteinty
           const float unc2 = pFrame->mpCamera->uncertainty2(obs.head(2));
-
           const float &invSigma2 = pFrame->mvInvLevelSigma2[kpUn.octave] / unc2;
           e->setInformation(Eigen::Matrix3d::Identity() * invSigma2);
 

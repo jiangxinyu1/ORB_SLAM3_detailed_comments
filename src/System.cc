@@ -134,7 +134,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // 建立一个新的ORB字典
     mpVocabulary = new ORBVocabulary();
     // 读取预训练好的ORB字典并返回成功/失败标志
-    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+//    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
     // 如果加载失败，就输出错误信息
     if(!bVocLoad)
     {
@@ -159,7 +160,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
     mpVocabulary = new ORBVocabulary();
-    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+//    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
     if(!bVocLoad)
     {
       cerr << "Wrong path to vocabulary. " << endl;
