@@ -14,6 +14,11 @@ Camera.fy: 836.66235352
 Camera.cx: 636.00115967
 Camera.cy: 357.10168457
 
+#Camera.fx: 418.19937134
+#Camera.fy: 418.33117676
+#Camera.cx: 318.000579835
+#Camera.cy: 178.550842285
+
 Camera.k1: 0.0
 Camera.k2: 0.0
 Camera.k3: 0.0
@@ -57,7 +62,7 @@ IMU.Frequency: 225
 IMU.InsertKFsWhenLost: 1
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1250
+ORBextractor.nFeatures: 400
 
 # ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2

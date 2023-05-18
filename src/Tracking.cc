@@ -1690,11 +1690,25 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im,
   // Step 2 ：构造Frame类
   if (mSensor == System::MONOCULAR)
   {
-    if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET ||(lastID - initID) < mMaxFrames)
-      mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
+    if( mState==NOT_INITIALIZED ||
+        mState==NO_IMAGES_YET ||
+        (lastID - initID) < mMaxFrames )
+    {
+      mCurrentFrame = Frame(mImGray,
+                            timestamp,
+                            mpIniORBextractor,
+                            mpORBVocabulary,
+                            mpCamera,
+                            mDistCoef,
+                            mbf,
+                            mThDepth);
+    }
     else
+    {
       mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
-  }
+    }
+    }
+
   else if(mSensor == System::IMU_MONOCULAR)
   {
     // 判断该帧是不是初始化

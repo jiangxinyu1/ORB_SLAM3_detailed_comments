@@ -130,6 +130,7 @@ int main(int argc, char *argv[])
                          argv[2],
                          ORB_SLAM3::System::IMU_MONOCULAR,
                          true);
+
   float imageScale = SLAM.GetImageScale();
   double t_resize = 0.f;
   double t_track = 0.f;

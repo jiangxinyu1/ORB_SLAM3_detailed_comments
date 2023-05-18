@@ -114,6 +114,7 @@ System::System(const string &strVocFile,
       mStrLoadAtlasFromFile = (string)node;
     }
     node = fsSettings["System.SaveAtlasToFile"];
+
     if(!node.empty() && node.isString())
     {
       mStrSaveAtlasToFile = (string)node;
@@ -164,7 +165,7 @@ System::System(const string &strVocFile,
   else
   {
     //Load ORB Vocabulary
-    cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
+    std::cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
     // 读取词典
     mpVocabulary = new ORBVocabulary();
@@ -176,16 +177,24 @@ System::System(const string &strVocFile,
       cerr << "Falied to open at: " << strVocFile << endl;
       exit(-1);
     }
-    cout << "Vocabulary loaded!" << endl << endl;
+    std::cout << "Vocabulary loaded!" << endl << endl;
 
     //Create KeyFrame Database
+
+    std::cout << "Create KeyFrameDatabase .... " << endl;
+
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
-    cout << "Load File" << endl;
+    std::cout << "Load File" << endl;
+
     // Load the file with an earlier session
     //clock_t start = clock();
+
     cout << "Initialization of Atlas from file: " << mStrLoadAtlasFromFile << endl;
+
     bool isRead = LoadAtlas(FileType::BINARY_FILE);
+
+    std::cout << "LoadAtlas" << endl << endl;
 
     if(!isRead)
     {
@@ -212,6 +221,9 @@ System::System(const string &strVocFile,
   }
   // Step 6 依次创建跟踪、局部建图、闭环、显示线程
   //Create Drawers. These are used by the Viewer
+
+  std::cout << "Create Drawers. These are used by the Viewer\n";
+
   // 创建用于显示帧和地图的类，由Viewer调用
   mpFrameDrawer = new FrameDrawer(mpAtlas);
   mpMapDrawer = new MapDrawer(mpAtlas, strSettingsFile, settings_);
@@ -220,6 +232,8 @@ System::System(const string &strVocFile,
   // (it will live in the main thread of execution, the one that called this constructor)
   // 创建跟踪线程（主线程）,不会立刻开启,会在对图像和imu预处理后在main主线程种执行
   cout << "Seq. Name: " << strSequence << endl;
+
+  std::cout << "Initialize the Tracking thread\n";
   mpTracker = new Tracking(this,
                            mpVocabulary,
                            mpFrameDrawer,
@@ -233,6 +247,7 @@ System::System(const string &strVocFile,
 
   //Initialize the Local Mapping thread and launch
   //创建并开启local mapping线程
+  std::cout << "Initialize the Local Mapping thread and launch\n";
   mpLocalMapper = new LocalMapping(this,
                                    mpAtlas,
                                    mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
@@ -255,6 +270,7 @@ System::System(const string &strVocFile,
     mpLocalMapper->mbFarPoints = false;
 
   //Initialize the Loop Closing thread and launch
+  std::cout << "Initialize the Loop Closing thread and launch\n";
   // mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR
   // 创建并开启闭环线程
   mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR, activeLC); // mSensor!=MONOCULAR);
@@ -274,9 +290,11 @@ System::System(const string &strVocFile,
   //usleep(10*1000*1000);
 
   //Initialize the Viewer thread and launch
+
+  std::cout << "Initialize the Viewer thread and launch\n";
+
   // 创建并开启显示线程
   if(bUseViewer)
-    //if(false) // TODO
   {
     mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile,settings_);
     mptViewer = new thread(&Viewer::Run, mpViewer);
@@ -530,6 +548,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im,
     }
   }
   // 计算相机位姿
+
   Sophus::SE3f Tcw = mpTracker->GrabImageMonocular(imToFeed,timestamp,filename);
 
   // 更新跟踪状态和参数

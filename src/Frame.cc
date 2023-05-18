@@ -515,12 +515,20 @@ void Frame::ExtractORB(int flag, const cv::Mat &im, const int x0, const int x1)
     vector<int> vLapping = {x0,x1};
     // 判断是左图还是右图
     if(flag==0)
-        // 左图的话就套使用左图指定的特征点提取器，并将提取结果保存到对应的变量中 
-        monoLeft = (*mpORBextractorLeft)(im,cv::Mat(),mvKeys,mDescriptors,vLapping);
+    {
+      // 左图的话就套使用左图指定的特征点提取器，并将提取结果保存到对应的变量中
+      monoLeft = (*mpORBextractorLeft)(im,cv::Mat(),mvKeys,mDescriptors,vLapping);
+      std::cout << "monoleft keypoint = " << monoLeft << "\n";
+    }
     else
-        // 右图的话就需要使用右图指定的特征点提取器，并将提取结果保存到对应的变量中 
-        monoRight = (*mpORBextractorRight)(im,cv::Mat(),mvKeysRight,mDescriptorsRight,vLapping);
+    {
+      // 右图的话就需要使用右图指定的特征点提取器，并将提取结果保存到对应的变量中
+      monoRight = (*mpORBextractorRight)(im,cv::Mat(),mvKeysRight,mDescriptorsRight,vLapping);
+      std::cout << "monoRight keypoint = " << monoRight << "\n";
+    }
+
 }
+
 
 bool Frame::isSet() const {
     return mbIsSet;
