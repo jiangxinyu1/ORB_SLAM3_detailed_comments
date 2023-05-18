@@ -3460,7 +3460,9 @@ bool Tracking::TrackWithMotionModel()
   }
 
   // 清空当前帧的地图点
-  fill(mCurrentFrame.mvpMapPoints.begin(),mCurrentFrame.mvpMapPoints.end(),static_cast<MapPoint*>(NULL));
+  fill(mCurrentFrame.mvpMapPoints.begin(),
+       mCurrentFrame.mvpMapPoints.end(),
+       static_cast<MapPoint*>(NULL));
 
   // Project points seen in previous frame
   // 设置特征匹配过程中的搜索半径
@@ -3472,7 +3474,9 @@ bool Tracking::TrackWithMotionModel()
     th=15;
 
   // Step 3：用上一帧地图点进行投影匹配，如果匹配点不够，则扩大搜索半径再来一次
-  int nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,th,mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR);
+  int nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,
+                                            th,
+                                            mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR);
 
   // If few matches, uses a wider window search
   // 如果匹配点太少，则扩大搜索半径再来一次
@@ -3561,16 +3565,12 @@ bool Tracking::TrackLocalMap()
 {
   // We have an estimation of the camera pose and some map points tracked in the frame.
   // We retrieve the local map and try to find matches to points in the local map.
-
   mTrackedFr++;
-
   // step 1 ：根据共视图更新Tracking类的局部关键帧和局部地图点 mvpLocalKeyFrames mvpLocalMapPoints
   UpdateLocalMap();
-
   // step 2 ：筛选合理的地图点,与当前帧的特征点进行投影匹配，找数据关联
   // (1) 滤除当前帧特征点对应3D点 (2) 滤除不在当前帧可观测范围的地图点
   SearchLocalPoints();
-
   // 查看内外点数目，调试用 (TO check outliers before PO)
   int aux1 = 0, aux2=0;
   for(int i=0; i<mCurrentFrame.N; i++)

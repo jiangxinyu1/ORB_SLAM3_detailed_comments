@@ -3,10 +3,9 @@
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
+
 File.version: "1.0"
-
 Camera.type: "PinHole"
-
 # Camera calibration and distortion parameters (OpenCV)
 Camera1.fx: 413.65381605
 Camera1.fy: 413.4395088
@@ -27,11 +26,12 @@ Camera.height: 480
 # Camera frames per second 
 Camera.fps: 15
 
-# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
-Camera.RGB: 1
-
 # Depth map values factor
 RGBD.DepthMapFactor: 1000.0
+
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
 
 # Transformation from body-frame (imu) to left camera
 IMU.T_b_c1: !!opencv-matrix

@@ -68,29 +68,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
+      <change afterPath="$PROJECT_DIR$/Examples/Monocular/oak-d-pro-test.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Examples/Monocular/oak_mono_i.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Calibration_Tutorial.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/Monocular-Inertial/RealSense_D455i.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular-Inertial/RealSense_D455i.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_rgbd.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_rgbd.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Stereo-Inertial/TUM_512_outdoors.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Stereo-Inertial/TUM_512_outdoors.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_kitti_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_kitti_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Monocular/mono_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/RGB-D/rgbd_tum_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/RGB-D/rgbd_tum_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo/stereo_euroc_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo/stereo_euroc_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo/stereo_kitti_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo/stereo_kitti_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo/stereo_tum_vi_old" beforeDir="false" afterPath="$PROJECT_DIR$/Examples_old/Stereo/stereo_tum_vi_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Thirdparty/DBoW2/DBoW2/TemplatedVocabulary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Thirdparty/DBoW2/DBoW2/TemplatedVocabulary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build_ros.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build_ros.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/System.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/System.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ORBmatcher.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/ORBmatcher.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/System.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/System.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,6 +106,7 @@
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
@@ -136,7 +124,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;proofread&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.29689702&quot;,
     &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -487,6 +475,8 @@
       <workItem from="1682126835617" duration="1219000" />
       <workItem from="1682216889397" duration="25000" />
       <workItem from="1683531616322" duration="1000" />
+      <workItem from="1684042133048" duration="4418000" />
+      <workItem from="1684225573235" duration="23549000" />
     </task>
     <servers />
   </component>

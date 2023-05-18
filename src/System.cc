@@ -47,20 +47,29 @@ Verbose::eLevel Verbose::th = Verbose::VERBOSITY_NORMAL;
  * @param initFr initFr表示初始化帧的id,开始设置为0
  * @param strSequence 序列名,在跟踪线程和局部建图线程用得到
  */
-System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
-               const bool bUseViewer, const int initFr, const string &strSequence):
-    mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false), mbResetActiveMap(false),
-    mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), mbShutDown(false)
+System::System(const string &strVocFile,
+               const string &strSettingsFile,
+               const eSensor sensor,
+               const bool bUseViewer,
+               const int initFr,
+               const string &strSequence):
+    mSensor(sensor),
+    mpViewer(static_cast<Viewer*>(NULL)),
+    mbReset(false),
+    mbResetActiveMap(false),
+    mbActivateLocalizationMode(false),
+    mbDeactivateLocalizationMode(false),
+    mbShutDown(false)
 {
   // Output welcome message
-  cout << endl <<
+  std::cout  << endl <<
        "ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza." << endl <<
        "ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza." << endl <<
        "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
        "This is free software, and you are welcome to redistribute it" << endl <<
        "under certain conditions. See LICENSE.txt." << endl << endl;
 
-  cout << "Input sensor was set to: ";
+  std::cout << "Input sensor was set to: ";
 
   if(mSensor==MONOCULAR)
     cout << "Monocular" << endl;             // 单目
@@ -78,10 +87,11 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
   //Check settings file
   // Step 2 读取配置文件
   cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
+
   // 如果打开失败，就输出错误信息
   if(!fsSettings.isOpened())
   {
-    cerr << "Failed to open settings file at: " << strSettingsFile << endl;
+    std::cerr << "Failed to open settings file at: " << strSettingsFile << endl;
     exit(-1);
   }
 
@@ -90,11 +100,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
   if(!node.empty() && node.isString() && node.string() == "1.0")
   {
     settings_ = new Settings(strSettingsFile,mSensor);
-
     // 保存及加载地图的名字
     mStrLoadAtlasFromFile = settings_->atlasLoadFile();
     mStrSaveAtlasToFile = settings_->atlasSaveFile();
-
     cout << (*settings_) << endl;
   }
   else
@@ -105,7 +113,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     {
       mStrLoadAtlasFromFile = (string)node;
     }
-
     node = fsSettings["System.SaveAtlasToFile"];
     if(!node.empty() && node.isString())
     {
@@ -134,7 +141,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // 建立一个新的ORB字典
     mpVocabulary = new ORBVocabulary();
     // 读取预训练好的ORB字典并返回成功/失败标志
-//    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    // bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
     bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
     // 如果加载失败，就输出错误信息
     if(!bVocLoad)
@@ -159,8 +166,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
+    // 读取词典
     mpVocabulary = new ORBVocabulary();
-//    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+    // bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
     bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
     if(!bVocLoad)
     {
@@ -174,7 +182,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
     cout << "Load File" << endl;
-
     // Load the file with an earlier session
     //clock_t start = clock();
     cout << "Initialization of Atlas from file: " << mStrLoadAtlasFromFile << endl;
@@ -186,10 +193,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
       exit(-1);
     }
     //mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
-
-
-    //cout << "KF in DB: " << mpKeyFrameDatabase->mnNumKFs << "; words: " << mpKeyFrameDatabase->mnNumWords << endl;
-
+    //cout << "KF in DB: " << mpKeyFrameDatabase->mnNumKFs << ";
+    // words: " << mpKeyFrameDatabase->mnNumWords << endl;
     loadedAtlas = true;
 
     mpAtlas->CreateNewMap();
@@ -200,27 +205,37 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //usleep(10*1000*1000);
   }
-
   // 如果是有imu的传感器类型，设置mbIsInertial = true;以后的跟踪和预积分将和这个标志有关
   if (mSensor==IMU_STEREO || mSensor==IMU_MONOCULAR || mSensor==IMU_RGBD)
+  {
     mpAtlas->SetInertialSensor();
-
+  }
   // Step 6 依次创建跟踪、局部建图、闭环、显示线程
   //Create Drawers. These are used by the Viewer
   // 创建用于显示帧和地图的类，由Viewer调用
   mpFrameDrawer = new FrameDrawer(mpAtlas);
   mpMapDrawer = new MapDrawer(mpAtlas, strSettingsFile, settings_);
 
-  //Initialize the Tracking thread
-  //(it will live in the main thread of execution, the one that called this constructor)
+  // Initialize the Tracking thread
+  // (it will live in the main thread of execution, the one that called this constructor)
   // 创建跟踪线程（主线程）,不会立刻开启,会在对图像和imu预处理后在main主线程种执行
   cout << "Seq. Name: " << strSequence << endl;
-  mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
-                           mpAtlas, mpKeyFrameDatabase, strSettingsFile, mSensor, settings_, strSequence);
+  mpTracker = new Tracking(this,
+                           mpVocabulary,
+                           mpFrameDrawer,
+                           mpMapDrawer,
+                           mpAtlas,
+                           mpKeyFrameDatabase,
+                           strSettingsFile,
+                           mSensor,
+                           settings_,
+                           strSequence);
 
   //Initialize the Local Mapping thread and launch
   //创建并开启local mapping线程
-  mpLocalMapper = new LocalMapping(this, mpAtlas, mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
+  mpLocalMapper = new LocalMapping(this,
+                                   mpAtlas,
+                                   mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
                                    mSensor==IMU_MONOCULAR || mSensor==IMU_STEREO || mSensor==IMU_RGBD, strSequence);
   mptLocalMapping = new thread(&ORB_SLAM3::LocalMapping::Run,mpLocalMapper);
   mpLocalMapper->mInitFr = initFr;

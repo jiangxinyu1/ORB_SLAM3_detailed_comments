@@ -41,7 +41,6 @@ class ImuGrabber
 public:
     ImuGrabber(){};
     void GrabImu(const sensor_msgs::ImuConstPtr &imu_msg);
-
     queue<sensor_msgs::ImuConstPtr> imuBuf;
     std::mutex mBufMutex;
 };
@@ -49,13 +48,16 @@ public:
 class ImageGrabber
 {
 public:
-    ImageGrabber(ORB_SLAM3::System* pSLAM, ImuGrabber *pImuGb, const bool bClahe): mpSLAM(pSLAM), mpImuGb(pImuGb), mbClahe(bClahe){}
+    ImageGrabber(ORB_SLAM3::System* pSLAM,
+                 ImuGrabber *pImuGb,
+                 const bool bClahe): mpSLAM(pSLAM), mpImuGb(pImuGb), mbClahe(bClahe){}
 
     void GrabImage(const sensor_msgs::ImageConstPtr& msg);
     cv::Mat GetImage(const sensor_msgs::ImageConstPtr &img_msg);
     void SyncWithImu();
 
-    queue<sensor_msgs::ImageConstPtr> img0Buf;
+    // 存储图像的双端队列
+    std::queue<sensor_msgs::ImageConstPtr> img0Buf;
     std::mutex mBufMutex;
    
     ORB_SLAM3::System* mpSLAM;
@@ -80,7 +82,6 @@ int main(int argc, char **argv)
     return 1;
   }
 
-
   if(argc==4)
   {
     std::string sbEqual(argv[3]);
@@ -88,14 +89,16 @@ int main(int argc, char **argv)
       bEqual = true;
   }
 
-  // Create SLAM system. It initializes all system threads and gets ready to process frames.
+  // Create SLAM system.
+  // It initializes all system threads and gets ready to process frames.
   ORB_SLAM3::System SLAM(argv[1],
                          argv[2],
                          ORB_SLAM3::System::IMU_MONOCULAR,
                          true);
 
+
   ImuGrabber imugb;
-  ImageGrabber igb(&SLAM,&imugb,bEqual); // TODO
+  ImageGrabber igb(&SLAM,&imugb,bEqual);
   
   // Maximum delay, 5 seconds
   // ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
@@ -109,30 +112,38 @@ int main(int argc, char **argv)
                                          100,
                                          &ImageGrabber::GrabImage,
                                          &igb);
-
   std::thread sync_thread(&ImageGrabber::SyncWithImu,&igb);
-
   ros::spin();
-
   return 0;
 }
 
 void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr &img_msg)
 {
+  // 如果图像队列非空，会直接丢弃最老的图像，然后把最新的图像塞进去
   mBufMutex.lock();
   if (!img0Buf.empty())
+  {
+
     img0Buf.pop();
+  }
   img0Buf.push(img_msg);
   mBufMutex.unlock();
 }
 
+
+/**
+ * 获取图像数据 ros -> cv mat
+ * @param img_msg
+ * @return
+ */
 cv::Mat ImageGrabber::GetImage(const sensor_msgs::ImageConstPtr &img_msg)
 {
   // Copy the ros image message to cv::Mat.
   cv_bridge::CvImageConstPtr cv_ptr;
   try
   {
-    cv_ptr = cv_bridge::toCvShare(img_msg, sensor_msgs::image_encodings::MONO8);
+    cv_ptr = cv_bridge::toCvShare(img_msg,
+                                  sensor_msgs::image_encodings::MONO8);
   }
   catch (cv_bridge::Exception& e)
   {
@@ -150,6 +161,14 @@ cv::Mat ImageGrabber::GetImage(const sensor_msgs::ImageConstPtr &img_msg)
   }
 }
 
+
+/**
+ * 搞出图像和imu原始数据，开始跟踪
+ * step 1 ： 判断时间戳
+ * step 2 ： 获取队列里最老的图像，pop一个
+ * step 3 ： 获取imu队列中小于图像时间戳之前的所有imu原始数据
+ * step 4 ： 开始跟踪
+ */
 void ImageGrabber::SyncWithImu()
 {
   while(1)
@@ -158,35 +177,61 @@ void ImageGrabber::SyncWithImu()
     double tIm = 0;
     if (!img0Buf.empty()&&!mpImuGb->imuBuf.empty())
     {
+      // step 1 ：判断时间戳
+      // 获取图像队列最开始的时间戳
       tIm = img0Buf.front()->header.stamp.toSec();
-      if(tIm>mpImuGb->imuBuf.back()->header.stamp.toSec())
-          continue;
+      if( tIm > mpImuGb->imuBuf.back()->header.stamp.toSec())
       {
-      this->mBufMutex.lock();
-      im = GetImage(img0Buf.front());
-      img0Buf.pop();
-      this->mBufMutex.unlock();
+        /*
+         * 如果图像队列最老的时间戳比IMU队列最新的时间戳要新，跳过
+         * image:          /------------/
+         * imu:  /------/
+         */
+        continue;
       }
 
-      vector<ORB_SLAM3::IMU::Point> vImuMeas;
+      // step 2 ：获取队列里最老的图像，pop一个
+      {
+        this->mBufMutex.lock();
+        im = GetImage(img0Buf.front());
+        img0Buf.pop();
+        this->mBufMutex.unlock();
+      }
+
+      // step 3 ： 获取imu队列中小于图像时间戳之前的所有imu原始数据
+      std::vector<ORB_SLAM3::IMU::Point> vImuMeas;
       mpImuGb->mBufMutex.lock();
       if(!mpImuGb->imuBuf.empty())
       {
         // Load imu measurements from buffer
         vImuMeas.clear();
-        while(!mpImuGb->imuBuf.empty() && mpImuGb->imuBuf.front()->header.stamp.toSec()<=tIm)
+        /*
+         * image:        /
+         * imu:  /=======---------/
+         */
+        while( !mpImuGb->imuBuf.empty() &&
+               mpImuGb->imuBuf.front()->header.stamp.toSec() <= tIm )
         {
           double t = mpImuGb->imuBuf.front()->header.stamp.toSec();
-          cv::Point3f acc(mpImuGb->imuBuf.front()->linear_acceleration.x, mpImuGb->imuBuf.front()->linear_acceleration.y, mpImuGb->imuBuf.front()->linear_acceleration.z);
-          cv::Point3f gyr(mpImuGb->imuBuf.front()->angular_velocity.x, mpImuGb->imuBuf.front()->angular_velocity.y, mpImuGb->imuBuf.front()->angular_velocity.z);
+          cv::Point3f acc(mpImuGb->imuBuf.front()->linear_acceleration.x,
+                          mpImuGb->imuBuf.front()->linear_acceleration.y,
+                          mpImuGb->imuBuf.front()->linear_acceleration.z);
+          cv::Point3f gyr(mpImuGb->imuBuf.front()->angular_velocity.x,
+                          mpImuGb->imuBuf.front()->angular_velocity.y,
+                          mpImuGb->imuBuf.front()->angular_velocity.z);
           vImuMeas.push_back(ORB_SLAM3::IMU::Point(acc,gyr,t));
           mpImuGb->imuBuf.pop();
         }
       }
       mpImuGb->mBufMutex.unlock();
-      if(mbClahe)
-        mClahe->apply(im,im);
 
+      // 默认是false
+      if(mbClahe)
+      {
+        mClahe->apply(im,im);
+      }
+
+      // step 4 ： 开始跟踪
       mpSLAM->TrackMonocular(im,tIm,vImuMeas);
     }
 
