@@ -60,13 +60,8 @@ ${PROJECT_SOURCE_DIR}/../../../lib/libORB_SLAM3.so
 )
 
 # Node for monocular camera
-rosbuild_add_executable(Mono
-src/ros_mono.cc
-)
-
-target_link_libraries(Mono
-${LIBS}
-)
+rosbuild_add_executable( Mono  src/ros_mono.cc )
+target_link_libraries(Mono  ${LIBS} )
 
 # Node for monocular camera (Augmented Reality Demo)
 # 由于里面代码没有将cv::mat 改成 SOPUS的暂时注释掉，不然会报错

@@ -44,8 +44,6 @@ find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
 find_package(realsense2)
 
-find_package(cv_bridge)
-
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
@@ -261,6 +259,7 @@ if(realsense2_FOUND)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Calibration)
+
 if(realsense2_FOUND)
     add_executable(recorder_realsense_D435i
             Examples/Calibration/recorder_realsense_D435i.cc)
@@ -271,7 +270,7 @@ if(realsense2_FOUND)
     target_link_libraries(recorder_realsense_T265 ${PROJECT_NAME})
 endif()
 
-#Old examples
+#Old examples 注释掉老的例程
 
 ## RGB-D examples
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples_old/RGB-D)

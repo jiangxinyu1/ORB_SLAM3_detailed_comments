@@ -46,8 +46,6 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "Mono");
   ROS_WARN("============== RUN ros_mono.cc \n");
-
-  ROS_WARN("============== RUN ros_mono.cc \n");
   ros::start();
 
   if(argc != 3)
