@@ -63,8 +63,16 @@ namespace ORB_SLAM3
  * @param settings 参数类
  * @param _strSeqName 序列名字，没用到
  */
-Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer,
-                   Atlas *pAtlas, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, Settings* settings, const string &_nameSeq)
+Tracking::Tracking(System *pSys,
+                   ORBVocabulary* pVoc,
+                   FrameDrawer *pFrameDrawer,
+                   MapDrawer *pMapDrawer,
+                   Atlas *pAtlas,
+                   KeyFrameDatabase* pKFDB,
+                   const string &strSettingPath,
+                   const int sensor,
+                   Settings* settings,
+                   const string &_nameSeq)
     : mState(NO_IMAGES_YET), mSensor(sensor), mTrackedFr(0), mbStep(false),
       mbOnlyTracking(false), mbMapUpdated(false), mbVO(false), mpORBVocabulary(pVoc), mpKeyFrameDB(pKFDB),
       mbReadyToInitializate(false), mpSystem(pSys), mpViewer(NULL), bStepByStep(false),
@@ -123,24 +131,21 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
   mnNumDataset = 0;
 
   // 遍历下地图中的相机，然后打印出来了
-  vector<GeometricCamera*> vpCams = mpAtlas->GetAllCameras();
-  std::cout << "There are " << vpCams.size() << " cameras in the atlas" << std::endl;
+  std::vector<GeometricCamera*> vpCams = mpAtlas->GetAllCameras();
+  cout << "There are " << vpCams.size() << " cameras in the atlas" << std::endl;
+  cout << " is pinhole" << std::endl;
   for(GeometricCamera* pCam : vpCams)
   {
     std::cout << "Camera " << pCam->GetId();
-    if(pCam->GetType() == GeometricCamera::CAM_PINHOLE)
-    {
+    if(pCam->GetType() == GeometricCamera::CAM_PINHOLE){
       std::cout << " is pinhole" << std::endl;
-    }
-    else if(pCam->GetType() == GeometricCamera::CAM_FISHEYE)
-    {
+    }else if(pCam->GetType() == GeometricCamera::CAM_FISHEYE){
       std::cout << " is fisheye" << std::endl;
-    }
-    else
-    {
+    }else{
       std::cout << " is unknown" << std::endl;
     }
   }
+  std::cout << "End of read camera params ,add to Atlas, Construct ORBextractor and ImuPreIntegrated\n";
 
 #ifdef REGISTER_TIMES
   vdRectStereo_ms.clear();
@@ -153,6 +158,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     vdNewKF_ms.clear();
     vdTrackTotal_ms.clear();
 #endif
+
 }
 
 #ifdef REGISTER_TIMES
@@ -558,7 +564,7 @@ Tracking::~Tracking()
 }
 
 /**
- * @brief 根据参数类读取参数，可快速略过不看
+ * @brief 根据参数类读取参数，初始化特征提取，初始化IMU预积分，
  * @param settings 参数类
  */
 void Tracking::newParameterLoader(Settings *settings) {
@@ -589,13 +595,14 @@ void Tracking::newParameterLoader(Settings *settings) {
   mK_(1,2) = mpCamera->getParameter(3);
 
   // 读取相机2
-  if((mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD) &&
-     settings->cameraType() == Settings::KannalaBrandt){
+  if((mSensor==System::STEREO ||
+      mSensor==System::IMU_STEREO ||
+      mSensor==System::IMU_RGBD) &&
+      settings->cameraType() == Settings::KannalaBrandt)
+  {
     mpCamera2 = settings->camera2();
     mpCamera2 = mpAtlas->AddCamera(mpCamera2);
-
     mTlr = settings->Tlr();
-
     mpFrameDrawer->both = true;
   }
 
@@ -626,13 +633,30 @@ void Tracking::newParameterLoader(Settings *settings) {
   int fMinThFAST = settings->minThFAST();
   float fScaleFactor = settings->scaleFactor();
 
-  mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+  mpORBextractorLeft = new ORBextractor(nFeatures,
+                                        fScaleFactor,
+                                        nLevels,
+                                        fIniThFAST,
+                                        fMinThFAST);
 
   if(mSensor==System::STEREO || mSensor==System::IMU_STEREO)
-    mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+  {
+    mpORBextractorRight = new ORBextractor(nFeatures,
+                                           fScaleFactor,
+                                           nLevels,
+                                           fIniThFAST,
+                                           fMinThFAST);
+  }
 
   if(mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR)
-    mpIniORBextractor = new ORBextractor(5*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+  {
+    mpIniORBextractor = new ORBextractor(5*nFeatures,
+                                         fScaleFactor,
+                                         nLevels,
+                                         fIniThFAST,
+                                         fMinThFAST);
+  }
+
 
   //IMU parameters
   // 3. 读取imu参数
@@ -646,8 +670,9 @@ void Tracking::newParameterLoader(Settings *settings) {
   float Naw = settings->accWalk();
 
   const float sf = sqrt(mImuFreq);
+  // （2）初始化IMU的标定类，这里将噪声和随机游走从连续形式转成离散形式，要经过频率的变换
   mpImuCalib = new IMU::Calib(Tbc,Ng*sf,Na*sf,Ngw/sf,Naw/sf);
-
+  // （3）这里初始化预积分类，调用构造函数
   mpImuPreintegratedFromLastKF = new IMU::Preintegrated(IMU::Bias(),*mpImuCalib);
 }
 

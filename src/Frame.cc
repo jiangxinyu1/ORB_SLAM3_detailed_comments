@@ -530,7 +530,8 @@ void Frame::ExtractORB(int flag, const cv::Mat &im, const int x0, const int x1)
 }
 
 
-bool Frame::isSet() const {
+bool Frame::isSet() const
+{
     return mbIsSet;
 }
 

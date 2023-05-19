@@ -88,6 +88,8 @@ System::System(const string &strVocFile,
   // Step 2 读取配置文件
   cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
 
+  std::cout << "ooo\n";
+
   // 如果打开失败，就输出错误信息
   if(!fsSettings.isOpened())
   {
@@ -214,6 +216,7 @@ System::System(const string &strVocFile,
 
     //usleep(10*1000*1000);
   }
+
   // 如果是有imu的传感器类型，设置mbIsInertial = true;以后的跟踪和预积分将和这个标志有关
   if (mSensor==IMU_STEREO || mSensor==IMU_MONOCULAR || mSensor==IMU_RGBD)
   {
@@ -221,19 +224,19 @@ System::System(const string &strVocFile,
   }
   // Step 6 依次创建跟踪、局部建图、闭环、显示线程
   //Create Drawers. These are used by the Viewer
-
-  std::cout << "Create Drawers. These are used by the Viewer\n";
+   cout << "Create Drawers. These are used by the Viewer\n";
 
   // 创建用于显示帧和地图的类，由Viewer调用
   mpFrameDrawer = new FrameDrawer(mpAtlas);
   mpMapDrawer = new MapDrawer(mpAtlas, strSettingsFile, settings_);
 
-  // Initialize the Tracking thread
   // (it will live in the main thread of execution, the one that called this constructor)
   // 创建跟踪线程（主线程）,不会立刻开启,会在对图像和imu预处理后在main主线程种执行
-  cout << "Seq. Name: " << strSequence << endl;
 
-  std::cout << "Initialize the Tracking thread\n";
+  cout<< "Initialize the Tracking thread\n";
+  cout<< "Seq. Name: " << strSequence << endl;
+
+
   mpTracker = new Tracking(this,
                            mpVocabulary,
                            mpFrameDrawer,
@@ -247,14 +250,18 @@ System::System(const string &strVocFile,
 
   //Initialize the Local Mapping thread and launch
   //创建并开启local mapping线程
-  std::cout << "Initialize the Local Mapping thread and launch\n";
+
+  cout << "Initialize the Local Mapping thread and launch\n";
+
   mpLocalMapper = new LocalMapping(this,
                                    mpAtlas,
                                    mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
                                    mSensor==IMU_MONOCULAR || mSensor==IMU_STEREO || mSensor==IMU_RGBD, strSequence);
   mptLocalMapping = new thread(&ORB_SLAM3::LocalMapping::Run,mpLocalMapper);
-  mpLocalMapper->mInitFr = initFr;
 
+
+
+  mpLocalMapper->mInitFr = initFr;
   // 设置最远3D地图点的深度值，如果超过阈值，说明可能三角化不太准确，丢弃
   if(settings_)
     mpLocalMapper->mThFarPoints = settings_->thFarPoints();
@@ -269,11 +276,17 @@ System::System(const string &strVocFile,
   else
     mpLocalMapper->mbFarPoints = false;
 
+  std::cout << "mpLocalMapper->mThFarPoints = " << mpLocalMapper->mThFarPoints <<"\n";
+
   //Initialize the Loop Closing thread and launch
-  std::cout << "Initialize the Loop Closing thread and launch\n";
+  cout << "Initialize the Loop Closing thread and launch\n";
   // mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR
   // 创建并开启闭环线程
-  mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR, activeLC); // mSensor!=MONOCULAR);
+  mpLoopCloser = new LoopClosing(mpAtlas,
+                                 mpKeyFrameDatabase,
+                                 mpVocabulary,
+                                 mSensor!=MONOCULAR,
+                                 activeLC); // mSensor!=MONOCULAR);
   mptLoopClosing = new thread(&ORB_SLAM3::LoopClosing::Run, mpLoopCloser);
 
   //Set pointers between threads
@@ -291,7 +304,7 @@ System::System(const string &strVocFile,
 
   //Initialize the Viewer thread and launch
 
-  std::cout << "Initialize the Viewer thread and launch\n";
+  cout << "Initialize the Viewer thread and launch\n";
 
   // 创建并开启显示线程
   if(bUseViewer)

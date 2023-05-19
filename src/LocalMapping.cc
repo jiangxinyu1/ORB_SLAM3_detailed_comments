@@ -59,14 +59,10 @@ LocalMapping::LocalMapping(System* pSys,
    * mbFinished:         判断最终LocalMapping::Run() 是否完成的标志。
    */
   mnMatchesInliers = 0;
-
   mbBadImu = false;
-
   mTinit = 0.f;
-
   mNumLM = 0;
   mNumKFCulling=0;
-
 #ifdef REGISTER_TIMES
   nLBA_exec = 0;
     nLBA_abort = 0;

@@ -62,7 +62,7 @@ IMU.Frequency: 225
 IMU.InsertKFsWhenLost: 1
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 400
+ORBextractor.nFeatures: 1000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid
 ORBextractor.scaleFactor: 1.2
@@ -90,5 +90,4 @@ Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500.0
-Viewer.imageViewScale: 1.0
-
+Viewer.imageViewScale: 1

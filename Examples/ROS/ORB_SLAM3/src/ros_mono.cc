@@ -43,7 +43,11 @@ public:
 
 int main(int argc, char **argv)
 {
+
   ros::init(argc, argv, "Mono");
+  ROS_WARN("============== RUN ros_mono.cc \n");
+
+  ROS_WARN("============== RUN ros_mono.cc \n");
   ros::start();
 
   if(argc != 3)
@@ -81,6 +85,7 @@ int main(int argc, char **argv)
 
 void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr& msg)
 {
+  // std::cout << "Get image\n";
   // Copy the ros image message to cv::Mat.
   cv_bridge::CvImageConstPtr cv_ptr;
   try

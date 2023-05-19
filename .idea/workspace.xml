@@ -11,54 +11,32 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="ORB_SLAM3" targetName="rgbd_inertial_realsense_D435i_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_inertial_realsense_t265_old" />
       <config projectName="ORB_SLAM3" targetName="rgbd_realsense_D435i" />
       <config projectName="ORB_SLAM3" targetName="stereo_inertial_realsense_t265" />
-      <config projectName="ORB_SLAM3" targetName="stereo_tum_vi_old" />
-      <config projectName="ORB_SLAM3" targetName="recorder_realsense_D435i" />
-      <config projectName="ORB_SLAM3" targetName="mono_tum_vi_old" />
       <config projectName="ORB_SLAM3" targetName="mono_inertial_tum_vi" />
-      <config projectName="ORB_SLAM3" targetName="stereo_realsense_t265" />
       <config projectName="ORB_SLAM3" targetName="mono_euroc" />
-      <config projectName="ORB_SLAM3" targetName="mono_realsense_D435i_old" />
-      <config projectName="ORB_SLAM3" targetName="mono_tum_old" />
-      <config projectName="ORB_SLAM3" targetName="mono_realsense_t265_old" />
-      <config projectName="ORB_SLAM3" targetName="mono_inertial_realsense_D435i_old" />
+      <config projectName="ORB_SLAM3" targetName="mono_inertial_realsense_t265" />
+      <config projectName="ORB_SLAM3" targetName="rgbd_inertial_realsense_D435i" />
+      <config projectName="ORB_SLAM3" targetName="mono_kitti" />
+      <config projectName="ORB_SLAM3" targetName="mono_tum_vi" />
+      <config projectName="ORB_SLAM3" targetName="stereo_inertial_euroc" />
+      <config projectName="ORB_SLAM3" targetName="ORB_SLAM3" />
+      <config projectName="ORB_SLAM3" targetName="stereo_euroc" />
+      <config projectName="ORB_SLAM3" targetName="mono_realsense_t265" />
+      <config projectName="ORB_SLAM3" targetName="stereo_kitti" />
+      <config projectName="ORB_SLAM3" targetName="recorder_realsense_D435i" />
+      <config projectName="ORB_SLAM3" targetName="stereo_realsense_t265" />
       <config projectName="ORB_SLAM3" targetName="mono_inertial_euroc" />
       <config projectName="ORB_SLAM3" targetName="g2o" />
-      <config projectName="ORB_SLAM3" targetName="mono_inertial_realsense_t265" />
-      <config projectName="ORB_SLAM3" targetName="stereo_realsense_t265_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_inertial_euroc_old" />
-      <config projectName="ORB_SLAM3" targetName="rgbd_inertial_realsense_D435i" />
       <config projectName="ORB_SLAM3" targetName="mono_tum" />
-      <config projectName="ORB_SLAM3" targetName="mono_inertial_realsense_t265_old" />
-      <config projectName="ORB_SLAM3" targetName="mono_kitti" />
       <config projectName="ORB_SLAM3" targetName="stereo_realsense_D435i" />
       <config projectName="ORB_SLAM3" targetName="stereo_inertial_tum_vi" />
-      <config projectName="ORB_SLAM3" targetName="mono_tum_vi" />
-      <config projectName="ORB_SLAM3" targetName="stereo_inertial_realsense_D435i_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_euroc_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_kitti_old" />
       <config projectName="ORB_SLAM3" targetName="mono_realsense_D435i" />
       <config projectName="ORB_SLAM3" targetName="rgbd_tum" />
-      <config projectName="ORB_SLAM3" targetName="mono_inertial_tum_vi_old" />
       <config projectName="ORB_SLAM3" targetName="recorder_realsense_T265" />
-      <config projectName="ORB_SLAM3" targetName="rgbd_realsense_D435i_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_inertial_tum_vi_old" />
-      <config projectName="ORB_SLAM3" targetName="mono_inertial_euroc_old" />
       <config projectName="ORB_SLAM3" targetName="stereo_tum_vi" />
-      <config projectName="ORB_SLAM3" targetName="stereo_inertial_euroc" />
-      <config projectName="ORB_SLAM3" targetName="mono_euroc_old" />
-      <config projectName="ORB_SLAM3" targetName="ORB_SLAM3" />
-      <config projectName="ORB_SLAM3" targetName="rgbd_tum_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_euroc" />
       <config projectName="ORB_SLAM3" targetName="stereo_inertial_realsense_D435i" />
-      <config projectName="ORB_SLAM3" targetName="mono_realsense_t265" />
       <config projectName="ORB_SLAM3" targetName="mono_inertial_realsense_D435i" />
-      <config projectName="ORB_SLAM3" targetName="stereo_kitti" />
-      <config projectName="ORB_SLAM3" targetName="mono_kitti_old" />
-      <config projectName="ORB_SLAM3" targetName="stereo_realsense_D435i_old" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -69,10 +47,19 @@
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Monocular-Inertial/mono_inertial_euroc.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular-Inertial/mono_inertial_euroc.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/Monocular/oak_mono_i.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular/oak_mono_i.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/Stereo-Inertial/stereo_inertial_realsense_D435i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/Stereo-Inertial/stereo_inertial_realsense_t265" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular-Inertial/mono_inertial_realsense_D435i_old" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_realsense_D435i_old" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples_old/Monocular/mono_realsense_t265_old" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples_old/Stereo-Inertial/stereo_inertial_realsense_t265_old" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_ros.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build_ros.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Frame.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Frame.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/System.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/System.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
     </list>
@@ -117,17 +104,19 @@
     &quot;cmake.loaded.for.project&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/xinyu/workspace/yuRobot/sensing/CMakeLists.txt&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.general&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.29689702&quot;,
     &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="CMake 应用程序.ORB_SLAM3">
+  <component name="RunManager" selected="CMake 应用程序.mono_euroc">
     <configuration name="ORB_SLAM3" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="ORB_SLAM3" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -143,17 +132,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="mono_euroc_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_euroc_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_euroc_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="mono_inertial_euroc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_inertial_euroc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_inertial_euroc">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="mono_inertial_euroc_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_inertial_euroc_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_inertial_euroc_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -163,17 +142,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="mono_inertial_realsense_D435i_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_inertial_realsense_D435i_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_inertial_realsense_D435i_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="mono_inertial_realsense_t265" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_inertial_realsense_t265" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_inertial_realsense_t265">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="mono_inertial_realsense_t265_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_inertial_realsense_t265_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_inertial_realsense_t265_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -183,17 +152,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="mono_inertial_tum_vi_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_inertial_tum_vi_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_inertial_tum_vi_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="mono_kitti" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_kitti" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_kitti">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="mono_kitti_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_kitti_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_kitti_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -203,17 +162,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="mono_realsense_D435i_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_realsense_D435i_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_realsense_D435i_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="mono_realsense_t265" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_realsense_t265" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_realsense_t265">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="mono_realsense_t265_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_realsense_t265_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_realsense_t265_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -223,17 +172,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="mono_tum_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_tum_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_tum_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="mono_tum_vi" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_tum_vi" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_tum_vi">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="mono_tum_vi_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="mono_tum_vi_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="mono_tum_vi_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -253,17 +192,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="rgbd_inertial_realsense_D435i_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="rgbd_inertial_realsense_D435i_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="rgbd_inertial_realsense_D435i_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="rgbd_realsense_D435i" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="rgbd_realsense_D435i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="rgbd_realsense_D435i">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="rgbd_realsense_D435i_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="rgbd_realsense_D435i_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="rgbd_realsense_D435i_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -273,17 +202,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="rgbd_tum_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="rgbd_tum_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="rgbd_tum_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="stereo_euroc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_euroc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_euroc">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="stereo_euroc_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_euroc_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_euroc_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -293,17 +212,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stereo_inertial_euroc_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_inertial_euroc_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_inertial_euroc_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="stereo_inertial_realsense_D435i" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_inertial_realsense_D435i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_inertial_realsense_D435i">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="stereo_inertial_realsense_D435i_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_inertial_realsense_D435i_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_inertial_realsense_D435i_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -313,17 +222,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stereo_inertial_realsense_t265_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_inertial_realsense_t265_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_inertial_realsense_t265_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="stereo_inertial_tum_vi" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_inertial_tum_vi" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_inertial_tum_vi">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="stereo_inertial_tum_vi_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_inertial_tum_vi_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_inertial_tum_vi_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -333,17 +232,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stereo_kitti_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_kitti_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_kitti_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="stereo_realsense_D435i" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_realsense_D435i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_realsense_D435i">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="stereo_realsense_D435i_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_realsense_D435i_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_realsense_D435i_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -353,17 +242,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stereo_realsense_t265_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_realsense_t265_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_realsense_t265_old">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="stereo_tum_vi" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_tum_vi" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_tum_vi">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="stereo_tum_vi_old" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="stereo_tum_vi_old" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ORB_SLAM3" RUN_TARGET_NAME="stereo_tum_vi_old">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -374,54 +253,32 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="CMake 应用程序.ORB_SLAM3" />
-      <item itemvalue="CMake 应用程序.g2o" />
       <item itemvalue="CMake 应用程序.mono_euroc" />
-      <item itemvalue="CMake 应用程序.mono_euroc_old" />
       <item itemvalue="CMake 应用程序.mono_inertial_euroc" />
-      <item itemvalue="CMake 应用程序.mono_inertial_euroc_old" />
       <item itemvalue="CMake 应用程序.mono_inertial_realsense_D435i" />
-      <item itemvalue="CMake 应用程序.mono_inertial_realsense_D435i_old" />
       <item itemvalue="CMake 应用程序.mono_inertial_realsense_t265" />
-      <item itemvalue="CMake 应用程序.mono_inertial_realsense_t265_old" />
       <item itemvalue="CMake 应用程序.mono_inertial_tum_vi" />
-      <item itemvalue="CMake 应用程序.mono_inertial_tum_vi_old" />
       <item itemvalue="CMake 应用程序.mono_kitti" />
-      <item itemvalue="CMake 应用程序.mono_kitti_old" />
       <item itemvalue="CMake 应用程序.mono_realsense_D435i" />
-      <item itemvalue="CMake 应用程序.mono_realsense_D435i_old" />
       <item itemvalue="CMake 应用程序.mono_realsense_t265" />
-      <item itemvalue="CMake 应用程序.mono_realsense_t265_old" />
       <item itemvalue="CMake 应用程序.mono_tum" />
-      <item itemvalue="CMake 应用程序.mono_tum_old" />
       <item itemvalue="CMake 应用程序.mono_tum_vi" />
-      <item itemvalue="CMake 应用程序.mono_tum_vi_old" />
+      <item itemvalue="CMake 应用程序.ORB_SLAM3" />
       <item itemvalue="CMake 应用程序.recorder_realsense_D435i" />
       <item itemvalue="CMake 应用程序.recorder_realsense_T265" />
       <item itemvalue="CMake 应用程序.rgbd_inertial_realsense_D435i" />
-      <item itemvalue="CMake 应用程序.rgbd_inertial_realsense_D435i_old" />
       <item itemvalue="CMake 应用程序.rgbd_realsense_D435i" />
-      <item itemvalue="CMake 应用程序.rgbd_realsense_D435i_old" />
       <item itemvalue="CMake 应用程序.rgbd_tum" />
-      <item itemvalue="CMake 应用程序.rgbd_tum_old" />
       <item itemvalue="CMake 应用程序.stereo_euroc" />
-      <item itemvalue="CMake 应用程序.stereo_euroc_old" />
       <item itemvalue="CMake 应用程序.stereo_inertial_euroc" />
-      <item itemvalue="CMake 应用程序.stereo_inertial_euroc_old" />
       <item itemvalue="CMake 应用程序.stereo_inertial_realsense_D435i" />
-      <item itemvalue="CMake 应用程序.stereo_inertial_realsense_D435i_old" />
       <item itemvalue="CMake 应用程序.stereo_inertial_realsense_t265" />
-      <item itemvalue="CMake 应用程序.stereo_inertial_realsense_t265_old" />
       <item itemvalue="CMake 应用程序.stereo_inertial_tum_vi" />
-      <item itemvalue="CMake 应用程序.stereo_inertial_tum_vi_old" />
       <item itemvalue="CMake 应用程序.stereo_kitti" />
-      <item itemvalue="CMake 应用程序.stereo_kitti_old" />
       <item itemvalue="CMake 应用程序.stereo_realsense_D435i" />
-      <item itemvalue="CMake 应用程序.stereo_realsense_D435i_old" />
       <item itemvalue="CMake 应用程序.stereo_realsense_t265" />
-      <item itemvalue="CMake 应用程序.stereo_realsense_t265_old" />
       <item itemvalue="CMake 应用程序.stereo_tum_vi" />
-      <item itemvalue="CMake 应用程序.stereo_tum_vi_old" />
+      <item itemvalue="CMake 应用程序.g2o" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
@@ -473,7 +330,9 @@
       <workItem from="1682216889397" duration="25000" />
       <workItem from="1683531616322" duration="1000" />
       <workItem from="1684042133048" duration="4418000" />
-      <workItem from="1684225573235" duration="29781000" />
+      <workItem from="1684225573235" duration="49349000" />
+      <workItem from="1684486164739" duration="15000" />
+      <workItem from="1684486189331" duration="4141000" />
     </task>
     <servers />
   </component>
@@ -485,6 +344,17 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
