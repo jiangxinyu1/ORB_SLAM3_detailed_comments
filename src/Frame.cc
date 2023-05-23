@@ -350,10 +350,12 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
      mImuCalib(ImuCalib), mpImuPreintegrated(NULL),mpPrevFrame(pPrevF),mpImuPreintegratedFrame(NULL), mpReferenceKF(static_cast<KeyFrame*>(NULL)), mbIsSet(false), mbImuPreintegrated(false), mpCamera(pCamera),
      mpCamera2(nullptr), mbHasPose(false), mbHasVelocity(false)
 {
+  // copy imGray to imgLeft
+    imgLeft = imGray.clone();
+
     // Frame ID
     // Step 1 帧的ID 自增
     mnId=nNextId++;
-
     // Step 2 计算图像金字塔的参数 
     // Scale Level Info
 	//获取图像金字塔的层数
@@ -518,13 +520,13 @@ void Frame::ExtractORB(int flag, const cv::Mat &im, const int x0, const int x1)
     {
       // 左图的话就套使用左图指定的特征点提取器，并将提取结果保存到对应的变量中
       monoLeft = (*mpORBextractorLeft)(im,cv::Mat(),mvKeys,mDescriptors,vLapping);
-      std::cout << "monoleft keypoint = " << monoLeft << "\n";
+      // std::cout << "monoleft keypoint = " << monoLeft << "\n";
     }
     else
     {
       // 右图的话就需要使用右图指定的特征点提取器，并将提取结果保存到对应的变量中
       monoRight = (*mpORBextractorRight)(im,cv::Mat(),mvKeysRight,mDescriptorsRight,vLapping);
-      std::cout << "monoRight keypoint = " << monoRight << "\n";
+      // std::cout << "monoRight keypoint = " << monoRight << "\n";
     }
 
 }

@@ -72,7 +72,7 @@ System::System(const string &strVocFile,
   std::cout << "Input sensor was set to: ";
 
   if(mSensor==MONOCULAR)
-    cout << "Monocular" << endl;             // 单目
+    cout << "Monocular === " << endl;             // 单目
   else if(mSensor==STEREO)
     cout << "Stereo" << endl;                // 双目
   else if(mSensor==RGBD)
@@ -86,9 +86,8 @@ System::System(const string &strVocFile,
 
   //Check settings file
   // Step 2 读取配置文件
+  std::cout << "begin to read yaml.";
   cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
-
-  std::cout << "ooo\n";
 
   // 如果打开失败，就输出错误信息
   if(!fsSettings.isOpened())
@@ -131,6 +130,8 @@ System::System(const string &strVocFile,
     activeLC = static_cast<int>(fsSettings["loopClosing"]) != 0;
   }
 
+  std::cout << "Set bl loopClosing = " << activeLC << "\n";
+
   mStrVocabularyFilePath = strVocFile;
 
   // ORBSLAM3新加的多地图管理功能，这里加载Atlas标识符
@@ -140,8 +141,6 @@ System::System(const string &strVocFile,
   {
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
-
-    // 建立一个新的ORB字典
     mpVocabulary = new ORBVocabulary();
     // 读取预训练好的ORB字典并返回成功/失败标志
     // bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
@@ -179,16 +178,13 @@ System::System(const string &strVocFile,
       cerr << "Falied to open at: " << strVocFile << endl;
       exit(-1);
     }
-    std::cout << "Vocabulary loaded!" << endl << endl;
+    std::cout << "Vocabulary loaded!" << endl;
 
     //Create KeyFrame Database
-
     std::cout << "Create KeyFrameDatabase .... " << endl;
-
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
     std::cout << "Load File" << endl;
-
     // Load the file with an earlier session
     //clock_t start = clock();
 
@@ -235,8 +231,6 @@ System::System(const string &strVocFile,
 
   cout<< "Initialize the Tracking thread\n";
   cout<< "Seq. Name: " << strSequence << endl;
-
-
   mpTracker = new Tracking(this,
                            mpVocabulary,
                            mpFrameDrawer,
@@ -250,7 +244,6 @@ System::System(const string &strVocFile,
 
   //Initialize the Local Mapping thread and launch
   //创建并开启local mapping线程
-
   cout << "Initialize the Local Mapping thread and launch\n";
 
   mpLocalMapper = new LocalMapping(this,
@@ -496,12 +489,13 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im,
     if(mbShutDown)
       return Sophus::SE3f();
   }
+  // （1）确认传感器输入是否是单目或单目VIO，不是直接退出
   if(mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR)
   {
-    // 确保是单目或单目VIO模式
     cerr << "ERROR: you called TrackMonocular but input sensor was not set to Monocular nor Monocular-Inertial." << endl;
     exit(-1);
   }
+  // （2）确认输入图像是否要resize
   cv::Mat imToFeed = im.clone();
   if(settings_ && settings_->needToResize())
   {
@@ -552,6 +546,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im,
       mbResetActiveMap = false;
     }
   }
+
   // 如果是单目VIO模式，把IMU数据存储到队列mlQueueImuData
   if (mSensor == System::IMU_MONOCULAR)
   {
@@ -560,8 +555,8 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im,
       mpTracker->GrabImuData(vImuMeas[i_imu]);
     }
   }
-  // 计算相机位姿
 
+  // 计算相机位姿
   Sophus::SE3f Tcw = mpTracker->GrabImageMonocular(imToFeed,timestamp,filename);
 
   // 更新跟踪状态和参数

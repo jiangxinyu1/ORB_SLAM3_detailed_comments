@@ -104,11 +104,11 @@ int main(int argc, char **argv)
   // ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb); 
   // ros::Subscriber sub_img0 = n.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage,&igb);
   // 以下为EUROC
-  ros::Subscriber sub_imu = n.subscribe("/camera/imu",
+  ros::Subscriber sub_imu = n.subscribe("/stereo_inertial_publisher/imu",
                                         1000,
                                         &ImuGrabber::GrabImu,
                                         &imugb);
-  ros::Subscriber sub_img0 = n.subscribe("/camera/color/image_raw",
+  ros::Subscriber sub_img0 = n.subscribe("/stereo_inertial_publisher/left/image_rect",
                                          100,
                                          &ImageGrabber::GrabImage,
                                          &igb);

@@ -327,6 +327,7 @@ protected:
     unsigned int mnInitialFrameId;
     unsigned int mnLastInitFrameId;
 
+    // 创建了新的地图
     bool mbCreatedMap;
 
     //Motion Model

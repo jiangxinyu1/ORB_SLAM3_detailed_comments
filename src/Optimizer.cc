@@ -1790,7 +1790,8 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool *pbStopFlag, Map *pMap
       }
     }
   }
-  // 步骤4.1：相比ORBSLAM2多出了判断固定关键帧的个数，最起码要两个固定的,如果实在没有就把lLocalKeyFrames中最早的KF固定，还是不够再加上第二早的KF固定
+  // 步骤4.1：相比ORBSLAM2多出了判断固定关键帧的个数，
+  // 最起码要两个固定的,如果实在没有就把lLocalKeyFrames中最早的KF固定，还是不够再加上第二早的KF固定
   num_fixedKF = lFixedCameras.size() + num_fixedKF;
 
   // 1.0 版本没有以下这段

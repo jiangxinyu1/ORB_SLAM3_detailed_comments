@@ -1695,7 +1695,7 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im,
                                           string filename)
 {
   mImGray = im;
-  // Step 1 ：将彩色图像转为灰度图像
+  // step 1 ：将彩色图像转为灰度图像
   // 若图片是3、4通道的彩色图，还需要转化成单通道灰度图
   if(mImGray.channels()==3)
   {
@@ -1712,13 +1712,14 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im,
       cvtColor(mImGray,mImGray,cv::COLOR_BGRA2GRAY);
   }
 
-  // Step 2 ：构造Frame类
+  // step 2 ：构造Frame类
   if (mSensor == System::MONOCULAR)
   {
     if( mState==NOT_INITIALIZED ||
         mState==NO_IMAGES_YET ||
         (lastID - initID) < mMaxFrames )
     {
+      // （1）如果还没有完成视觉初始化，传入的特征提取器是 mpIniORBextractor
       mCurrentFrame = Frame(mImGray,
                             timestamp,
                             mpIniORBextractor,
@@ -1730,7 +1731,15 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im,
     }
     else
     {
-      mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
+      // （2）如果完成视觉初始化，传入的特征提取器是 mpORBextractorLeft
+      mCurrentFrame = Frame(mImGray,
+                            timestamp,
+                            mpORBextractorLeft,
+                            mpORBVocabulary,
+                            mpCamera,
+                            mDistCoef,
+                            mbf,
+                            mThDepth);
     }
     }
 
@@ -1751,6 +1760,7 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im,
                             *mpImuCalib);
     }
     else
+    {
       mCurrentFrame = Frame(mImGray,
                             timestamp,
                             mpORBextractorLeft,
@@ -1761,12 +1771,11 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im,
                             mThDepth,
                             &mLastFrame,
                             *mpImuCalib);
+    }
   }
 
   // t0存储未初始化时的第1帧图像时间戳
-  if (mState==NO_IMAGES_YET)
-    t0=timestamp;
-
+  if (mState==NO_IMAGES_YET) {t0=timestamp;}
   mCurrentFrame.mNameFile = filename;
   mCurrentFrame.mnDataset = mnNumDataset;
 
@@ -1865,9 +1874,8 @@ void Tracking::PreintegrateIMU()
   }
 
   // 构造imu预处理器,并初始化标定数据
-  IMU::Preintegrated* pImuPreintegratedFromLastFrame =
-      new IMU::Preintegrated(mLastFrame.mImuBias,
-                             mCurrentFrame.mImuCalib);
+  IMU::Preintegrated* pImuPreintegratedFromLastFrame = new IMU::Preintegrated(mLastFrame.mImuBias,
+                                                                              mCurrentFrame.mImuCalib);
   // 针对预积分位置的不同做不同中值积分的处理
   /**
      *  根据上面imu帧的筛选，IMU与图像帧的时序如下：
@@ -1928,9 +1936,11 @@ void Tracking::PreintegrateIMU()
     // 应该是必存在的吧，一个是相对上一关键帧，一个是相对上一帧
     if (!mpImuPreintegratedFromLastKF)
       cout << "mpImuPreintegratedFromLastKF does not exist" << endl;
+
     mpImuPreintegratedFromLastKF->IntegrateNewMeasurement(acc,
                                                           angVel,
                                                           tstep);
+
     pImuPreintegratedFromLastFrame->IntegrateNewMeasurement(acc,
                                                             angVel,
                                                             tstep);
@@ -1943,7 +1953,7 @@ void Tracking::PreintegrateIMU()
 
   mCurrentFrame.setIntegrated();
 
-  //Verbose::PrintMess("Preintegration is finished!! ", Verbose::VERBOSITY_DEBUG);
+  // Verbose::PrintMess("Preintegration is finished!! ", Verbose::VERBOSITY_DEBUG);
 }
 
 /**
@@ -2143,6 +2153,7 @@ void Tracking::Track()
         vdIMUInteg_ms.push_back(timePreImu);
 #endif
   }
+  // 切换创建新地图为false
   mbCreatedMap = false;
 
   // Get Map Mutex -> Map cannot be changed
@@ -2197,7 +2208,7 @@ void Tracking::Track()
   {
 
     // step 7 : 系统成功初始化,开始跟踪(System is initialized. Track Frame.)
-    // (1) 两个跟踪阶段：帧间跟踪，和局部地图跟踪
+    // (1) 两个跟踪阶段：帧间跟踪，和 局部地图跟踪
     // (2) 两种跟踪模式：正常SLAM模式(定位+局部地图更新) 、纯定位模式
     // (3) 三种跟踪状态：OK，RECENTLY_LOST，LOST
     bool bOK;
@@ -2946,7 +2957,7 @@ void Tracking::MonocularInitialization()
   {
     // Set Reference Frame
     // 单目初始帧的特征点数必须大于100
-    if(mCurrentFrame.mvKeys.size()>100)
+    if(mCurrentFrame.mvKeys.size()>50)
     {
       // 初始化需要两帧，分别是mInitialFrame，mCurrentFrame
       mInitialFrame = Frame(mCurrentFrame);
@@ -2979,11 +2990,11 @@ void Tracking::MonocularInitialization()
   }
   else  // 第二帧来了
   {
-    // Step 2 如果当前帧特征点数太少（不超过100），则重新构造初始器
-    if (((int)mCurrentFrame.mvKeys.size()<=100)||((mSensor == System::IMU_MONOCULAR)&&(mLastFrame.mTimeStamp-mInitialFrame.mTimeStamp>1.0)))
+    // Step 2 如果当前帧特征点数太少（不超过100），则重新构造初始器./bui
+    if (((int)mCurrentFrame.mvKeys.size()<=50)||
+        ((mSensor == System::IMU_MONOCULAR)&&(mLastFrame.mTimeStamp-mInitialFrame.mTimeStamp>1.0)))
     {
       mbReadyToInitializate = false;
-
       return;
     }
 
@@ -2996,12 +3007,17 @@ void Tracking::MonocularInitialization()
     // 对 mInitialFrame,mCurrentFrame 进行特征点匹配
     // mvbPrevMatched为参考帧的特征点坐标，初始化存储的是mInitialFrame中特征点坐标，匹配后存储的是匹配好的当前帧的特征点坐标
     // mvIniMatches 保存参考帧F1中特征点是否匹配上，index保存是F1对应特征点索引，值保存的是匹配好的F2特征点索引
-    int nmatches = matcher.SearchForInitialization(mInitialFrame,mCurrentFrame,mvbPrevMatched,mvIniMatches,100);
+    int nmatches = matcher.SearchForInitialization(mInitialFrame,
+                                                   mCurrentFrame,
+                                                   mvbPrevMatched,
+                                                   mvIniMatches,
+                                                   100);
 
     // Check if there are enough correspondences
-    // Step 4 验证匹配结果，如果初始化的两帧之间的匹配点太少，重新初始化
-    if(nmatches<100)
+    // Step 4 验证匹配结果，如果初始化的两帧之间的匹配点太少，重新初始化；原有代码是100
+    if(nmatches<20)
     {
+      std::cout << "[MonocularInitialization] : nmatches = " << nmatches << " < 20 \n";
       mbReadyToInitializate = false;
       return;
     }
@@ -3010,7 +3026,12 @@ void Tracking::MonocularInitialization()
     Sophus::SE3f Tcw;
     vector<bool> vbTriangulated; // Triangulated Correspondences (mvIniMatches)
 
-    if(mpCamera->ReconstructWithTwoViews(mInitialFrame.mvKeysUn,mCurrentFrame.mvKeysUn,mvIniMatches,Tcw,mvIniP3D,vbTriangulated))
+    if(mpCamera->ReconstructWithTwoViews(mInitialFrame.mvKeysUn,
+                                         mCurrentFrame.mvKeysUn,
+                                         mvIniMatches,
+                                         Tcw,
+                                         mvIniP3D,
+                                         vbTriangulated))
     {
       // Step 6 初始化成功后，删除那些无法进行三角化的匹配点
       for(size_t i=0, iend=mvIniMatches.size(); i<iend;i++)
@@ -3032,7 +3053,11 @@ void Tracking::MonocularInitialization()
       // Initialize函数会得到mvIniP3D，
       // mvIniP3D是cv::Point3f类型的一个容器，是个存放3D点的临时变量，
       // CreateInitialMapMonocular将3D点包装成MapPoint类型存入KeyFrame和Map中
+
+      std::cout << "try to CreateInitialMapMonocular ... \n";
       CreateInitialMapMonocular();
+    }else{
+      std::cout << "[MonocularInitialization]: " << "ReconstructWithTwoViews failed." <<  "\n";
     }
   }
 }
@@ -3522,17 +3547,26 @@ bool Tracking::TrackWithMotionModel()
   if(nmatches<20)
   {
     Verbose::PrintMess("Not enough matches, wider window search!!", Verbose::VERBOSITY_NORMAL);
-    fill(mCurrentFrame.mvpMapPoints.begin(),mCurrentFrame.mvpMapPoints.end(),static_cast<MapPoint*>(NULL));
-
-    nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,2*th,mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR);
+    fill(mCurrentFrame.mvpMapPoints.begin(),
+         mCurrentFrame.mvpMapPoints.end(),
+         static_cast<MapPoint*>(nullptr));
+    nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,
+                                          2*th,
+                                          mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR);
     Verbose::PrintMess("Matches with wider search: " + to_string(nmatches), Verbose::VERBOSITY_NORMAL);
-
   }
 
   // 这里不同于ORB-SLAM2的方式
   if(nmatches<20)
   {
+    std::cout << "[TrackWithMotionModel]: nmathes = " << nmatches << ",Not enough matches\n";
     Verbose::PrintMess("Not enough matches!!", Verbose::VERBOSITY_NORMAL);
+
+    // 存储匀速模型是失效的场景图
+    std::string imcid = std::to_string(mCurrentFrame.mnId);
+    cv::imwrite("/home/parallels/homedata/"+imcid+".png",mCurrentFrame.imgLeft);
+
+
     if (mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
       return true;
     else
