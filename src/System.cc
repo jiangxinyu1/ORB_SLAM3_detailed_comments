@@ -564,7 +564,6 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im,
   mTrackingState = mpTracker->mState;
   mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
   mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
-
   return Tcw;
 }
 
@@ -959,8 +958,6 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
       continue;
     }
 
-    //cout << "3" << endl;
-
     Trw = Trw * pKF->GetPose()*Twb; // Tcp*Tpw*Twb0=Tcb0 where b0 is the new world reference
 
     // cout << "4" << endl;
@@ -979,8 +976,6 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
       Eigen::Vector3f twc = Twc.translation();
       f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
     }
-
-    // cout << "5" << endl;
   }
   //cout << "end saving trajectory" << endl;
   f.close();

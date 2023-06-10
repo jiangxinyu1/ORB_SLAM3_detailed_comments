@@ -1177,7 +1177,6 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
         std::cout << "- k4: " << k4 << std::endl;
 
         std::cout << "- mTlr: \n" << cvTlr << std::endl;
-
         std::cout << "- Camera2 Lapping: " << rightLappingBegin << ", " << rightLappingEnd << std::endl;
       }
     }
@@ -1491,8 +1490,6 @@ bool Tracking::ParseIMUParamFile(cv::FileStorage &fSettings)
   mpImuCalib = new IMU::Calib(Tbc,Ng*sf,Na*sf,Ngw/sf,Naw/sf);
 
   mpImuPreintegratedFromLastKF = new IMU::Preintegrated(IMU::Bias(),*mpImuCalib);
-
-
   return true;
 }
 

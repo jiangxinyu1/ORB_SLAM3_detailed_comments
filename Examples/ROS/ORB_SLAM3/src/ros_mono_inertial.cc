@@ -108,7 +108,7 @@ int main(int argc, char **argv)
                                         1000,
                                         &ImuGrabber::GrabImu,
                                         &imugb);
-  ros::Subscriber sub_img0 = n.subscribe("/stereo_inertial_publisher/left/image_rect",
+  ros::Subscriber sub_img0 = n.subscribe("/stereo_inertial_publisher/color/image",
                                          100,
                                          &ImageGrabber::GrabImage,
                                          &igb);

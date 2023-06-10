@@ -63,7 +63,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nodeHandler;
 
   // ros::Subscriber sub = nodeHandler.subscribe("/camera/color/image_raw", 1, &ImageGrabber::GrabImage,&igb);
-  ros::Subscriber sub = nodeHandler.subscribe("/stereo_inertial_publisher/left/image_rect",
+  ros::Subscriber sub = nodeHandler.subscribe("/stereo_inertial_publisher/color/image",
                                               1,
                                               &ImageGrabber::GrabImage,
                                               &igb);

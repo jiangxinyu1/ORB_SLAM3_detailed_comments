@@ -99,13 +99,12 @@ void LocalMapping::Run()
   // 主循环
   while(1)
   {
+    // step 1 : 设置标志位，告诉Tracking，LocalMapping正处于繁忙状态，请不要给我发送关键帧打扰我
     // Tracking will see that Local Mapping is busy
-    // Step 1 告诉Tracking，LocalMapping正处于繁忙状态，请不要给我发送关键帧打扰我
     // LocalMapping线程处理的关键帧都是Tracking线程发过来的
     SetAcceptKeyFrames(false);
 
-    // Check if there are keyframes in the queue
-    // 等待处理的关键帧列表不为空 并且imu正常
+    // 检查：等待处理的关键帧列表不为空 并且imu正常
     if(CheckNewKeyFrames() && !mbBadImu)
     {
 #ifdef REGISTER_TIMES
@@ -238,9 +237,14 @@ void LocalMapping::Run()
           // 在函数InitializeIMU里设置IMU成功初始化标志 SetImuInitialized
           // IMU第一次初始化
           if (mbMonocular)
+          {
             InitializeIMU(1e2, 1e10, true);
+          }
           else
+          {
             InitializeIMU(1e2, 1e5, true);
+          }
+
         }
 
 
