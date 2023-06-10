@@ -71,8 +71,6 @@ namespace ORB_SLAM3
 //
 //另外有一篇对这个部分进行简介的帖子，具有很大的参考价值：[https://blog.csdn.net/saber_altolia/article/details/52623513]
 //
-
-
   const int PATCH_SIZE = 31;			///<使用灰度质心法计算特征点的方向信息时，图像块的大小,或者说是直径
   const int HALF_PATCH_SIZE = 15;		///<上面这个大小的一半，或者说是半径
   const int EDGE_THRESHOLD = 19;		///<算法生成的图像边
