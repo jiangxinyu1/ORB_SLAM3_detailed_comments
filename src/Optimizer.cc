@@ -3219,9 +3219,16 @@ void Optimizer::BundleAdjustment(
  * @param vSingVal 没用，估计调试用的
  * @param bHess 没用，估计调试用的
  */
-void Optimizer::FullInertialBA(
-    Map *pMap, int its, const bool bFixLocal, const long unsigned int nLoopId, bool *pbStopFlag,
-    bool bInit, float priorG, float priorA, Eigen::VectorXd *vSingVal, bool *bHess)
+void Optimizer::FullInertialBA(Map *pMap,
+                               int its,
+                               const bool bFixLocal,
+                               const long unsigned int nLoopId,
+                               bool *pbStopFlag,
+                               bool bInit,
+                               float priorG,
+                               float priorA,
+                               Eigen::VectorXd *vSingVal,
+                               bool *bHess)
 {
   // 获取地图里所有mp与kf，以及最大kf的id
   long unsigned int maxKFid = pMap->GetMaxKFid();
@@ -3670,9 +3677,17 @@ void Optimizer::FullInertialBA(
  * @param priorG 陀螺仪偏置的信息矩阵系数
  * @param priorA 加速度计偏置的信息矩阵系数
  */
-void Optimizer::InertialOptimization(
-    Map *pMap, Eigen::Matrix3d &Rwg, double &scale, Eigen::Vector3d &bg, Eigen::Vector3d &ba, bool bMono,
-    Eigen::MatrixXd &covInertial, bool bFixedVel, bool bGauss, float priorG, float priorA)
+void Optimizer::InertialOptimization(Map *pMap,
+                                     Eigen::Matrix3d &Rwg,
+                                     double &scale,
+                                     Eigen::Vector3d &bg,
+                                     Eigen::Vector3d &ba,
+                                     bool bMono,
+                                     Eigen::MatrixXd &covInertial,
+                                     bool bFixedVel,
+                                     bool bGauss,
+                                     float priorG,
+                                     float priorA)
 {
   Verbose::PrintMess("inertial optimization", Verbose::VERBOSITY_NORMAL);
   int its = 200;
@@ -3683,16 +3698,14 @@ void Optimizer::InertialOptimization(
   // 1. 构建优化器
   g2o::SparseOptimizer optimizer;
   g2o::BlockSolverX::LinearSolverType *linearSolver;
-
   linearSolver = new g2o::LinearSolverEigen<g2o::BlockSolverX::PoseMatrixType>();
-
   g2o::BlockSolverX *solver_ptr = new g2o::BlockSolverX(linearSolver);
-
   g2o::OptimizationAlgorithmLevenberg *solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
 
   if (priorG != 0.f)
+  {
     solver->setUserLambdaInit(1e3);
-
+  }
   optimizer.setAlgorithm(solver);
 
   // Set KeyFrame vertices (fixed poses and optimizable velocities)
@@ -3701,8 +3714,7 @@ void Optimizer::InertialOptimization(
   {
     KeyFrame *pKFi = vpKFs[i];
     // 跳过id大于当前地图最大id的关键帧
-    if (pKFi->mnId > maxKFid)
-      continue;
+    if (pKFi->mnId > maxKFid) {continue;}
     VertexPose *VP = new VertexPose(pKFi);  // 继承于public g2o::BaseVertex<6, ImuCamPose>
     VP->setId(pKFi->mnId);
     VP->setFixed(true);
@@ -3714,7 +3726,6 @@ void Optimizer::InertialOptimization(
       VV->setFixed(true);
     else
       VV->setFixed(false);
-
     optimizer.addVertex(VV);
   }
 
@@ -3756,6 +3767,7 @@ void Optimizer::InertialOptimization(
   // 5. 添加关于重力方向与尺度的节点
   VertexGDir *VGDir = new VertexGDir(Rwg);
   VGDir->setId(maxKFid * 2 + 4);
+  // note: 这里
   VGDir->setFixed(false);
   optimizer.addVertex(VGDir);
   VertexScale *VS = new VertexScale(scale);
@@ -3775,7 +3787,6 @@ void Optimizer::InertialOptimization(
   for (size_t i = 0; i < vpKFs.size(); i++)
   {
     KeyFrame *pKFi = vpKFs[i];
-
     if (pKFi->mPrevKF && pKFi->mnId <= maxKFid)
     {
       if (pKFi->isBad() || pKFi->mPrevKF->mnId > maxKFid)

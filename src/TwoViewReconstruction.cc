@@ -163,7 +163,7 @@ namespace ORB_SLAM3
     }
     else // if(pF_HF>0.6)
     {
-      cout << "Initialization from Fundamental" << endl;
+      // cout << "Initialization from Fundamental" << endl;
       return ReconstructF(vbMatchesInliersF,
                           F,
                           mK,
@@ -660,16 +660,16 @@ namespace ORB_SLAM3
     if (nGood4 > 0.7 * maxGood)
       nsimilar++;
 
-    std::cout << "minParallax = " << minParallax
-              << "\nparallax1:" << parallax1  << ",parallax2:" << parallax2
-              << ",parallax3:" << parallax3 << ",parallax4:" << parallax4 << "\n";
+//    std::cout << "minParallax = " << minParallax
+//              << "\nparallax1:" << parallax1  << ",parallax2:" << parallax2
+//              << ",parallax3:" << parallax3 << ",parallax4:" << parallax4 << "\n";
 
     // If there is not a clear winner or not enough triangulated points reject initialization
     // 恢复出来的3D的数目小于90%的有效匹配点（和机器人的移动有关），或者
     if (maxGood < nMinGood || nsimilar > 1)
     {
-      std::cout << "N = " << N << ", maxGood < nMinGood "<< ", nMinGood = " << nMinGood << ", maxGood = " << maxGood << "\n";
-      std::cout << "nsimilar = " << nsimilar << "\n";
+      //  std::cout << "N = " << N << ", maxGood < nMinGood "<< ", nMinGood = " << nMinGood << ", maxGood = " << maxGood << "\n";
+      // std::cout << "nsimilar = " << nsimilar << "\n";
       return false;
     }
 
@@ -718,7 +718,7 @@ namespace ORB_SLAM3
         return true;
       }
     }
-    std::cout << "There is no parallax > min parallax.return false.\n";
+    // std::cout << "There is no parallax > min parallax.return false.\n";
     return false;
   }
 

@@ -177,12 +177,15 @@ void LocalMapping::Run()
                          (mpCurrentKeyFrame->mPrevKF->mPrevKF->GetCameraCenter() - mpCurrentKeyFrame->mPrevKF->GetCameraCenter()).norm();
             // 如果距离大于5厘米，记录当前KF和上一KF时间戳的差，累加到mTinit
             if(dist>0.05)
+            {
               mTinit += mpCurrentKeyFrame->mTimeStamp - mpCurrentKeyFrame->mPrevKF->mTimeStamp;
+            }
             // 当前关键帧所在的地图尚未完成IMU BA2（IMU第三阶段初始化）
             if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2())
             {
               // 如果累计时间差小于10s 并且 距离小于2厘米，认为运动幅度太小，不足以初始化IMU，将mbBadImu设置为true
-              if((mTinit<10.f) && (dist<0.02))
+              // to
+              if((mTinit<3.f) && (dist<0.002))
               {
                 cout << "Not enough motion for initializing. Reseting..." << endl;
                 unique_lock<mutex> lock(mMutexReset);
@@ -195,7 +198,16 @@ void LocalMapping::Run()
             // 条件---------1.1、跟踪成功的内点数目大于75-----1.2、并且是单目--或--2.1、跟踪成功的内点数目大于100-----2.2、并且不是单目
             bool bLarge = ((mpTracker->GetMatchesInliers()>75)&&mbMonocular)||((mpTracker->GetMatchesInliers()>100)&&!mbMonocular);
             // 局部地图+IMU一起优化，优化关键帧位姿、地图点、IMU参数
-            Optimizer::LocalInertialBA(mpCurrentKeyFrame, &mbAbortBA, mpCurrentKeyFrame->GetMap(),num_FixedKF_BA,num_OptKF_BA,num_MPs_BA,num_edges_BA, bLarge, !mpCurrentKeyFrame->GetMap()->GetIniertialBA2());
+            std::cout << "debug............................... -> " << " 局部地图+IMU-BA LocalInertialBA" << "\n";
+            Optimizer::LocalInertialBA(mpCurrentKeyFrame,
+                                       &mbAbortBA,
+                                       mpCurrentKeyFrame->GetMap(),
+                                       num_FixedKF_BA,
+                                       num_OptKF_BA,
+                                       num_MPs_BA,
+                                       num_edges_BA,
+                                       bLarge,
+                                       !mpCurrentKeyFrame->GetMap()->GetIniertialBA2());
             b_doneLBA = true;
           }
           else
@@ -204,7 +216,14 @@ void LocalMapping::Run()
             // 局部地图BA，不包括IMU数据
             // 注意这里的第二个参数是按地址传递的,当这里的 mbAbortBA 状态发生变化时，能够及时执行/停止BA
             // 局部地图优化，不包括IMU信息。优化关键帧位姿、地图点
-            Optimizer::LocalBundleAdjustment(mpCurrentKeyFrame,&mbAbortBA, mpCurrentKeyFrame->GetMap(),num_FixedKF_BA,num_OptKF_BA,num_MPs_BA,num_edges_BA);
+            std::cout << "debug............................... -> " << " 局部地图BA LocalBundleAdjustment" << "\n";
+            Optimizer::LocalBundleAdjustment(mpCurrentKeyFrame,
+                                             &mbAbortBA,
+                                             mpCurrentKeyFrame->GetMap(),
+                                             num_FixedKF_BA,
+                                             num_OptKF_BA,
+                                             num_MPs_BA,
+                                             num_edges_BA);
             b_doneLBA = true;
           }
 
@@ -234,6 +253,7 @@ void LocalMapping::Run()
         // Step 7 当前关键帧所在地图未完成IMU初始化（第一阶段）
         if(!mpCurrentKeyFrame->GetMap()->isImuInitialized() && mbInertial)
         {
+          std::cout << "debug............................... -> " << " 开始第一次初始化 InitializeIMU" << "\n";
           // 在函数InitializeIMU里设置IMU成功初始化标志 SetImuInitialized
           // IMU第一次初始化
           if (mbMonocular)
@@ -268,10 +288,12 @@ void LocalMapping::Run()
           if(mpCurrentKeyFrame->GetMap()->isImuInitialized() && mpTracker->mState==Tracking::OK) // Enter here everytime local-mapping is called
           {
             // 当前关键帧所在的地图还未完成VIBA 1
-            if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA1()){
+            if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA1())
+            {
               // 如果累计时间差大于5s，开始VIBA1（IMU第二阶段初始化）
               if (mTinit>5.0f)
               {
+                std::cout << "debug............................... -> " << " IMU第二次初始化 InitializeIMU" << "\n";
                 cout << "start VIBA 1" << endl;
                 mpCurrentKeyFrame->GetMap()->SetIniertialBA1();
                 if (mbMonocular)
@@ -284,9 +306,12 @@ void LocalMapping::Run()
             }
               // Step 9.2 根据条件判断是否进行VIBA2（IMU第三次初始化）
               // 当前关键帧所在的地图还未完成VIBA 2
-            else if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2()){
-              if (mTinit>15.0f){
-                cout << "start VIBA 2" << endl;
+            else if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2())
+            {
+              if (mTinit>10.0f)
+              {
+                std::cout << "start VIBA 2" << endl;
+                std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
                 mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
                 if (mbMonocular)
                   InitializeIMU(0.f, 0.f, true);
@@ -307,8 +332,12 @@ void LocalMapping::Run()
                  (mTinit>65.0f && mTinit<65.5f)||
                  (mTinit>75.0f && mTinit<75.5f))){
               if (mbMonocular)
+              {
                 // 使用了所有关键帧，但只优化尺度和重力方向以及速度和偏执（其实就是一切跟惯性相关的量）
+                std::cout << "debug............................... -> " << " 尺度、重力方向优化 ScaleRefinement" << "\n";
                 ScaleRefinement();
+              }
+
             }
           }
         }
@@ -1539,7 +1568,11 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
 
   // 当前地图大于10帧才进行初始化
   if(mpAtlas->KeyFramesInMap()<nMinKF)
+  {
+    std::cout << "当前地图大于10帧才进行初始化... return\n";
     return;
+  }
+
 
   // Retrieve all keyframe in temporal order
   // 按照顺序存放目前地图里的关键帧，顺序按照前后顺序来，包括当前关键帧
@@ -1558,7 +1591,11 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
 
   mFirstTs=vpKF.front()->mTimeStamp;
   if(mpCurrentKeyFrame->mTimeStamp-mFirstTs<minTime)
+  {
+    std::cout << "时间戳... return\n";
     return;
+  }
+
 
   // 正在做IMU的初始化，在tracking里面使用，如果为true，暂不添加关键帧
   bInitializing = true;
@@ -1624,24 +1661,48 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     Eigen::Vector3f vzg = v*ang/nv;
     // 获得重力坐标系到世界坐标系的旋转矩阵的初值
     Rwg = Sophus::SO3f::exp(vzg).matrix();
+    // 设置扫地机下安装角度下的初值
+//    Rwg <<   0.99976524043941206,   0.01193571953895755,  0.018082871474901185,
+//             0.012826173916810839,   0.34661612293487593,  -0.93791938877419911,
+//             -0.017462557230840548,   0.93793114308290282,   0.34638165783353803;
     mRwg = Rwg.cast<double>();
+
+    std::cout << "Rwg Init = " <<  mRwg << "\n";
+    Eigen::Vector3d eulerAngle = mRwg.eulerAngles(2, 1, 0);
+    std::cout << "eulerAngle init  = " <<  eulerAngle * (180 / M_PI) << std::endl;  //45 -0 0
     mTinit = mpCurrentKeyFrame->mTimeStamp-mFirstTs;
   }
   else
   {
-    mRwg = Eigen::Matrix3d::Identity();
+//    Eigen::Matrix3f Rwg;
+//    Rwg <<   0.99976524043941206,   0.01193571953895755,  0.018082871474901185,
+//             0.012826173916810839,   0.34661612293487593,  -0.93791938877419911,
+//            -0.017462557230840548,   0.93793114308290282,   0.34638165783353803;
+//    mRwg = Rwg.cast<double>();
+     mRwg = Eigen::Matrix3d::Identity();
     mbg = mpCurrentKeyFrame->GetGyroBias().cast<double>();
     mba = mpCurrentKeyFrame->GetAccBias().cast<double>();
   }
 
-  mScale=1.0;
+  mScale=1;
 
   // 暂时没发现在别的地方出现过
   mInitTime = mpTracker->mLastFrame.mTimeStamp-vpKF.front()->mTimeStamp;
 
   std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
   // 3. 计算残差及偏置差，优化尺度重力方向及速度偏置，偏置先验为0，双目时不优化尺度
-  Optimizer::InertialOptimization(mpAtlas->GetCurrentMap(), mRwg, mScale, mbg, mba, mbMonocular, infoInertial, false, false, priorG, priorA);
+  std::cout << "debug............................... -> " << " 纯惯性初始化 " << "\n";
+  Optimizer::InertialOptimization(mpAtlas->GetCurrentMap(),
+                                  mRwg,
+                                  mScale,
+                                  mbg,
+                                  mba,
+                                  mbMonocular,
+                                  infoInertial,
+                                  false,
+                                  false,
+                                  priorG,
+                                  priorA);
   std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
   // 尺度太小的话初始化认为失败
@@ -1652,13 +1713,20 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     return;
   }
 
+  std::cout << "************************** imu first init sucess ****************************** \n";
+  std::cout << "mRwg after = \n" << mRwg << "\n";
+  std::cout << "mScale = " << mScale <<  "\n";
+  Eigen::Vector3d eulerAngle = mRwg.eulerAngles(2, 1, 0);
+  std::cout << "eulerAngle = " <<  eulerAngle * (180 / M_PI) << std::endl;  //45 -0 0
+
   // 到此时为止，前面做的东西没有改变map
 
   // Before this line we are not changing the map
   {
     unique_lock<mutex> lock(mpAtlas->GetCurrentMap()->mMutexMapUpdate);
     // 尺度变化超过设定值，或者非单目时（无论带不带imu，但这个函数只在带imu时才执行，所以这个可以理解为双目imu）
-    if ((fabs(mScale - 1.f) > 0.00001) || !mbMonocular) {
+    if ((fabs(mScale - 1.f) > 0.00001) || !mbMonocular)
+    {
       // 4.1 恢复重力方向与尺度信息
       Sophus::SE3f Twg(mRwg.cast<float>().transpose(), Eigen::Vector3f::Zero());
       mpAtlas->GetCurrentMap()->ApplyScaledRotation(Twg, mScale, true);
@@ -1691,15 +1759,29 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   }
 
   std::chrono::steady_clock::time_point t4 = std::chrono::steady_clock::now();
+
   // 代码里都为true
   if (bFIBA)
   {
+    std::cout << "debug............................... -> " << " 联合初始化 FullInertialBA" << "\n";
     // 5. 承接上一步纯imu优化，按照之前的结果更新了尺度信息及适应重力方向，所以要结合地图进行一次视觉加imu的全局优化，这次带了MP等信息
     // ! 1.0版本里面不直接赋值了，而是将所有优化后的信息保存到变量里面
     if (priorA!=0.f)
-      Optimizer::FullInertialBA(mpAtlas->GetCurrentMap(), 100, false, mpCurrentKeyFrame->mnId, NULL, true, priorG, priorA);
+      Optimizer::FullInertialBA(mpAtlas->GetCurrentMap(),
+                                100,
+                                false,
+                                mpCurrentKeyFrame->mnId,
+                                NULL,
+                                true,
+                                priorG,
+                                priorA);
     else
-      Optimizer::FullInertialBA(mpAtlas->GetCurrentMap(), 100, false, mpCurrentKeyFrame->mnId, NULL, false);
+      Optimizer::FullInertialBA(mpAtlas->GetCurrentMap(),
+                                100,
+                                false,
+                                mpCurrentKeyFrame->mnId,
+                                NULL,
+                                false);
   }
 
   std::chrono::steady_clock::time_point t5 = std::chrono::steady_clock::now();
@@ -1724,7 +1806,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   // Correct keyframes starting at map first keyframe
   // 7. 更新位姿与三维点
   // 获取地图中初始关键帧，第一帧肯定经过修正的
-  list<KeyFrame*> lpKFtoCheck(mpAtlas->GetCurrentMap()->mvpKeyFrameOrigins.begin(),mpAtlas->GetCurrentMap()->mvpKeyFrameOrigins.end());
+  list<KeyFrame*> lpKFtoCheck(mpAtlas->GetCurrentMap()->mvpKeyFrameOrigins.begin(),
+                              mpAtlas->GetCurrentMap()->mvpKeyFrameOrigins.end());
 
   // 初始就一个关键帧，顺藤摸瓜找到父子相连的所有关键帧
   // 类似于树的广度优先搜索，其实也就是根据父子关系遍历所有的关键帧，有的参与了FullInertialBA有的没参与

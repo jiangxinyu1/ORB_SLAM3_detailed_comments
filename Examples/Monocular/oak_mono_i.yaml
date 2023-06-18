@@ -52,7 +52,7 @@ IMU.AccWalk: 7.1952095806215616e-04
 IMU.Frequency: 225
 
 # Do not insert KFs when recently lost
-IMU.InsertKFsWhenLost: 1
+IMU.InsertKFsWhenLost: 0
 
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 1000
@@ -61,7 +61,7 @@ ORBextractor.nFeatures: 1000
 ORBextractor.scaleFactor: 1.2
 
 # ORB Extractor: Number of levels in the scale pyramid
-ORBextractor.nLevels: 8
+ORBextractor.nLevels: 3
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
@@ -83,5 +83,10 @@ Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500.0
-Viewer.imageViewScale: 1
+Viewer.imageViewScale: 0.4
+
+
+
+
+
 

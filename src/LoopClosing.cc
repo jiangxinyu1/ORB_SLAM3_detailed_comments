@@ -2400,7 +2400,9 @@ void LoopClosing::MergeLocal2()
     // 反正都要融合了，这里就拔苗助长完成IMU优化，回头直接全部放到融合地图里就好了
     const int numKFnew=pCurrentMap->KeyFramesInMap();
 
-    if((mpTracker->mSensor==System::IMU_MONOCULAR || mpTracker->mSensor==System::IMU_STEREO || mpTracker->mSensor==System::IMU_RGBD)
+    if((mpTracker->mSensor==System::IMU_MONOCULAR ||
+        mpTracker->mSensor==System::IMU_STEREO ||
+        mpTracker->mSensor==System::IMU_RGBD)
        && !pCurrentMap->GetIniertialBA2())
     {
         // Map is not completly initialized

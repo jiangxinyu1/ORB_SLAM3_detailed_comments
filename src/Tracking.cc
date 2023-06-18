@@ -2098,6 +2098,7 @@ void Tracking::Track()
           if(!pCurrentMap->GetIniertialBA2())
           {
             // 如果当前子图中imu没有经过BA2，重置active地图，也就是之前的数据不要了
+            std::cout << "当前子图中imu没有经过BA2，重置active地图\n";
             mpSystem->ResetActiveMap();
           }
           else
@@ -2333,6 +2334,7 @@ void Tracking::Track()
 
         if (pCurrentMap->KeyFramesInMap()<10)
         {
+          std::cout << "tracking lost keyframe < 10，重置active地图\n";
           mpSystem->ResetActiveMap();
           Verbose::PrintMess("Reseting current map...", Verbose::VERBOSITY_NORMAL);
         }
@@ -2732,6 +2734,7 @@ void Tracking::Track()
       // 如果地图中关键帧小于10，重置当前地图，退出当前跟踪
       if(pCurrentMap->KeyFramesInMap()<=10)
       {
+        std::cout << "tracking lost keyframe < 10，重置active地图\n";
         mpSystem->ResetActiveMap();
         return;
       }
@@ -2743,6 +2746,7 @@ void Tracking::Track()
         {
           // 如果是IMU模式并且还未进行IMU初始化，重置当前地图，退出当前跟踪
           Verbose::PrintMess("Track lost before IMU initialisation, reseting...", Verbose::VERBOSITY_QUIET);
+          std::cout << "Track lost before IMU initialisation, reseting...\n";
           mpSystem->ResetActiveMap();
           return;
         }
@@ -3014,7 +3018,7 @@ void Tracking::MonocularInitialization()
     // Step 4 验证匹配结果，如果初始化的两帧之间的匹配点太少，重新初始化；原有代码是100
     if(nmatches<20)
     {
-      std::cout << "[MonocularInitialization] : nmatches = " << nmatches << " < 20 \n";
+      // std::cout << "[MonocularInitialization] : nmatches = " << nmatches << " < 20 \n";
       mbReadyToInitializate = false;
       return;
     }
@@ -3054,7 +3058,7 @@ void Tracking::MonocularInitialization()
       std::cout << "try to CreateInitialMapMonocular ... \n";
       CreateInitialMapMonocular();
     }else{
-      std::cout << "[MonocularInitialization]: " << "ReconstructWithTwoViews failed." <<  "\n";
+      // std::cout << "[MonocularInitialization]: " << "ReconstructWithTwoViews failed." <<  "\n";
     }
   }
 }
@@ -3224,6 +3228,8 @@ void Tracking::CreateInitialMapMonocular()
   mpAtlas->GetCurrentMap()->mvpKeyFrameOrigins.push_back(pKFini);
 
   // 初始化成功，至此，初始化过程完成
+  //
+  std::cout << "debug............................... -> " << " 纯视觉初始化过程完成！！！" << "\n";
   mState=OK;
 
   initID = pKFcur->mnId;
@@ -3748,6 +3754,7 @@ bool Tracking::TrackLocalMap()
   // (1) 如果最近刚刚发生了重定位,那么至少成功匹配50个点才认为是成功跟踪
   if(mCurrentFrame.mnId < mnLastRelocFrameId+mMaxFrames && mnMatchesInliers<50)
   {
+    std::cout << "TrackLocalMap lost case 1\n";
     return false;
   }
   // (2) RECENTLY_LOST状态下，至少成功跟踪10个才算成功
@@ -3758,9 +3765,13 @@ bool Tracking::TrackLocalMap()
   // (3) 单目IMU模式下做完初始化至少成功跟踪15个才算成功，没做初始化需要50个
   if (mSensor == System::IMU_MONOCULAR)
   {
-    if( (mnMatchesInliers<15 && mpAtlas->isImuInitialized())||
-        (mnMatchesInliers<50 && !mpAtlas->isImuInitialized()))
+    if( (mnMatchesInliers<5 && mpAtlas->isImuInitialized())||
+        (mnMatchesInliers<5 && !mpAtlas->isImuInitialized()))
     {
+      std::cout << "TrackLocalMap lost case 2\n";
+      std::cout << "mnMatchesInliers = " << mnMatchesInliers
+                << ",mpAtlas->isImuInitialized() = " << mpAtlas->isImuInitialized()
+                << "\n";
       return false;
     }
     else
@@ -3780,9 +3791,14 @@ bool Tracking::TrackLocalMap()
   {
     // (5)非IMU的模式，只要跟踪的地图点大于30个就认为成功了
     if(mnMatchesInliers<30)
+    {
+      std::cout << "TrackLocalMap lost case 3\n";
       return false;
+    }
     else
+    {
       return true;
+    }
   }
 }
 
