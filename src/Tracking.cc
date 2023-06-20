@@ -3765,8 +3765,8 @@ bool Tracking::TrackLocalMap()
   // (3) 单目IMU模式下做完初始化至少成功跟踪15个才算成功，没做初始化需要50个
   if (mSensor == System::IMU_MONOCULAR)
   {
-    if( (mnMatchesInliers<5 && mpAtlas->isImuInitialized())||
-        (mnMatchesInliers<5 && !mpAtlas->isImuInitialized()))
+    if( (mnMatchesInliers<10 && mpAtlas->isImuInitialized())||
+        (mnMatchesInliers<10 && !mpAtlas->isImuInitialized()))
     {
       std::cout << "TrackLocalMap lost case 2\n";
       std::cout << "mnMatchesInliers = " << mnMatchesInliers

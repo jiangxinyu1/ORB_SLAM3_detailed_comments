@@ -2403,7 +2403,7 @@ void LoopClosing::MergeLocal2()
     if((mpTracker->mSensor==System::IMU_MONOCULAR ||
         mpTracker->mSensor==System::IMU_STEREO ||
         mpTracker->mSensor==System::IMU_RGBD)
-       && !pCurrentMap->GetIniertialBA2())
+        && !pCurrentMap->GetIniertialBA2())
     {
         // Map is not completly initialized
         Eigen::Vector3d bg, ba;
@@ -2421,7 +2421,6 @@ void LoopClosing::MergeLocal2()
         pCurrentMap->SetIniertialBA2();
         pCurrentMap->SetIniertialBA1();
         pCurrentMap->SetImuInitialized();
-
     }
 
 

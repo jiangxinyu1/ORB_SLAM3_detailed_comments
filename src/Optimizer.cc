@@ -3712,16 +3712,18 @@ void Optimizer::InertialOptimization(Map *pMap,
   // 2. 确定关键帧节点（锁住的位姿及可优化的速度）
   for (size_t i = 0; i < vpKFs.size(); i++)
   {
+    // step 1 : 添加视觉的关键帧位姿节点
     KeyFrame *pKFi = vpKFs[i];
     // 跳过id大于当前地图最大id的关键帧
     if (pKFi->mnId > maxKFid) {continue;}
     VertexPose *VP = new VertexPose(pKFi);  // 继承于public g2o::BaseVertex<6, ImuCamPose>
-    VP->setId(pKFi->mnId);
+    VP->setId(pKFi->mnId); // 将关键帧的id设置为优化顶点的id
     VP->setFixed(true);
     optimizer.addVertex(VP);
 
+    // step 2 : 添加视觉的关键帧速度节点
     VertexVelocity *VV = new VertexVelocity(pKFi);  // 继承于public g2o::BaseVertex<3, Eigen::Vector3d>
-    VV->setId(maxKFid + (pKFi->mnId) + 1);
+    VV->setId(maxKFid + (pKFi->mnId) + 1); // 将关键帧的id+1设置为优化顶点的id
     if (bFixedVel)
       VV->setFixed(true);
     else
@@ -3729,8 +3731,7 @@ void Optimizer::InertialOptimization(Map *pMap,
     optimizer.addVertex(VV);
   }
 
-  // Biases
-  // 3. 确定偏置节点，陀螺仪与加速度计
+  // step 3 : 添加IMU陀螺仪的bias节点
   VertexGyroBias *VG = new VertexGyroBias(vpKFs.front());
   VG->setId(maxKFid * 2 + 2);
   if (bFixedVel)
@@ -3738,44 +3739,45 @@ void Optimizer::InertialOptimization(Map *pMap,
   else
     VG->setFixed(false);
   optimizer.addVertex(VG);
+
+  // step 4 : 添加IMU加速度计的bias节点
   VertexAccBias *VA = new VertexAccBias(vpKFs.front());
   VA->setId(maxKFid * 2 + 3);
   if (bFixedVel)
     VA->setFixed(true);
   else
     VA->setFixed(false);
-
   optimizer.addVertex(VA);
 
-  // prior acc bias
+  // step 5 : 添加关于重力方向 Gravity 的节点
+  VertexGDir *VGDir = new VertexGDir(Rwg);
+  VGDir->setId(maxKFid * 2 + 4);
+  VGDir->setFixed(false); // 参与优化，设置为false
+  optimizer.addVertex(VGDir);
+
+  // step 6 : 添加关于视觉尺度 Scale 的节点
+  VertexScale *VS = new VertexScale(scale);
+  VS->setId(maxKFid * 2 + 5);
+  VS->setFixed(!bMono); // Fixed for stereo case
+  optimizer.addVertex(VS);
+
+  // step 7 : 添加IMU加速度计的bias的一元约束边 （prior acc bias）
+  // 添加关于加速度计与陀螺仪偏置的边，这两个边加入是保证第一帧的偏置为0
   Eigen::Vector3f bprior;
   bprior.setZero();
-
-  // 4. 添加关于加速度计与陀螺仪偏置的边，这两个边加入是保证第一帧的偏置为0
   EdgePriorAcc *epa = new EdgePriorAcc(bprior);
   epa->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VA));
   double infoPriorA = priorA;
   epa->setInformation(infoPriorA * Eigen::Matrix3d::Identity());
   optimizer.addEdge(epa);
+
+  // step 8 : 添加IMU陀螺仪的bias的一元约束边 （prior gyro bias）
   EdgePriorGyro *epg = new EdgePriorGyro(bprior);
   epg->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VG));
   double infoPriorG = priorG;
   epg->setInformation(infoPriorG * Eigen::Matrix3d::Identity());
   optimizer.addEdge(epg);
 
-  // Gravity and scale
-  // 5. 添加关于重力方向与尺度的节点
-  VertexGDir *VGDir = new VertexGDir(Rwg);
-  VGDir->setId(maxKFid * 2 + 4);
-  // note: 这里
-  VGDir->setFixed(false);
-  optimizer.addVertex(VGDir);
-  VertexScale *VS = new VertexScale(scale);
-  VS->setId(maxKFid * 2 + 5);
-  VS->setFixed(!bMono); // Fixed for stereo case
-  optimizer.addVertex(VS);
-
-  // Graph edges
   // IMU links with gravity and scale
   // 6. imu信息链接重力方向与尺度信息
   vector<EdgeInertialGS *> vpei;  // 后面虽然加入了边，但是没有用到，应该调试用的
@@ -3790,12 +3792,15 @@ void Optimizer::InertialOptimization(Map *pMap,
     if (pKFi->mPrevKF && pKFi->mnId <= maxKFid)
     {
       if (pKFi->isBad() || pKFi->mPrevKF->mnId > maxKFid)
+      {
         continue;
+      }
       if (!pKFi->mpImuPreintegrated)
+      {
         std::cout << "Not preintegrated measurement" << std::endl;
+      }
       // 到这里的条件是pKFi是好的，并且它有上一个关键帧，且他们的id要小于最大id
-      // 6.1 检查节点指针是否为空
-      // 将pKFi偏置设定为上一关键帧的偏置
+      // 6.1 检查节点指针是否为空 将pKFi偏置设定为上一关键帧的偏置
       pKFi->mpImuPreintegrated->SetNewBias(pKFi->mPrevKF->GetImuBias());
       g2o::HyperGraph::Vertex *VP1 = optimizer.vertex(pKFi->mPrevKF->mnId);
       g2o::HyperGraph::Vertex *VV1 = optimizer.vertex(maxKFid + (pKFi->mPrevKF->mnId) + 1);
@@ -3807,11 +3812,12 @@ void Optimizer::InertialOptimization(Map *pMap,
       g2o::HyperGraph::Vertex *VS = optimizer.vertex(maxKFid * 2 + 5);
       if (!VP1 || !VV1 || !VG || !VA || !VP2 || !VV2 || !VGDir || !VS)
       {
-        cout << "Error" << VP1 << ", " << VV1 << ", " << VG << ", " << VA << ", " << VP2 << ", " << VV2 << ", " << VGDir << ", " << VS << endl;
-
+        cout << "Error" << VP1 << ", " << VV1 << ", " << VG << ", "
+             << VA << ", " << VP2 << ", " << VV2 << ", "
+             << VGDir << ", " << VS << endl;
         continue;
       }
-      // 6.2 这是一个大边。。。。包含了上面所有信息，注意到前面的两个偏置也做了两个一元边加入
+      // step 9 ：添加imu预积分边，设置当前关键帧的预积分约束顶点
       EdgeInertialGS *ei = new EdgeInertialGS(pKFi->mpImuPreintegrated);
       ei->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VP1));
       ei->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VV1));
@@ -3821,26 +3827,21 @@ void Optimizer::InertialOptimization(Map *pMap,
       ei->setVertex(5, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VV2));
       ei->setVertex(6, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
       ei->setVertex(7, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VS));
-
       vpei.push_back(ei);
-
       vppUsedKF.push_back(make_pair(pKFi->mPrevKF, pKFi));
       optimizer.addEdge(ei);
     }
   }
 
+  // step 10 ：开始优化
   // Compute error for different scales
   std::set<g2o::HyperGraph::Edge *> setEdges = optimizer.edges();
-
   optimizer.setVerbose(false);
   optimizer.initializeOptimization();
   optimizer.optimize(its);
 
-  // 7. 取数
+  // step 11 ：获取优化的结果
   scale = VS->estimate();
-
-  // Recover optimized data
-  // Biases
   VG = static_cast<VertexGyroBias *>(optimizer.vertex(maxKFid * 2 + 2));
   VA = static_cast<VertexAccBias *>(optimizer.vertex(maxKFid * 2 + 3));
   Vector6d vb;
@@ -3848,7 +3849,6 @@ void Optimizer::InertialOptimization(Map *pMap,
   bg << VG->estimate();
   ba << VA->estimate();
   scale = VS->estimate();
-
   IMU::Bias b(vb[3], vb[4], vb[5], vb[0], vb[1], vb[2]);
   Rwg = VGDir->estimate().Rwg;
 
@@ -3857,21 +3857,22 @@ void Optimizer::InertialOptimization(Map *pMap,
   for (size_t i = 0; i < N; i++)
   {
     KeyFrame *pKFi = vpKFs[i];
-    if (pKFi->mnId > maxKFid)
-      continue;
-
+    if (pKFi->mnId > maxKFid) {continue;}
     VertexVelocity *VV = static_cast<VertexVelocity *>(optimizer.vertex(maxKFid + (pKFi->mnId) + 1));
     Eigen::Vector3d Vw = VV->estimate(); // Velocity is scaled after
     pKFi->SetVelocity(Vw.cast<float>());
-
     if ((pKFi->GetGyroBias() - bg.cast<float>()).norm() > 0.01)
     {
       pKFi->SetNewBias(b);
       if (pKFi->mpImuPreintegrated)
+      {
         pKFi->mpImuPreintegrated->Reintegrate();
+      }
     }
     else
+    {
       pKFi->SetNewBias(b);
+    }
   }
 }
 

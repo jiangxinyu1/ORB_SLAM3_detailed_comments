@@ -108,7 +108,7 @@ int main(int argc, char **argv)
                                         1000,
                                         &ImuGrabber::GrabImu,
                                         &imugb);
-  ros::Subscriber sub_img0 = n.subscribe("/stereo_inertial_publisher/color/image",
+  ros::Subscriber sub_img0 = n.subscribe("/stereo_inertial_publisher/left/image_rect",
                                          100,
                                          &ImageGrabber::GrabImage,
                                          &igb);
@@ -125,6 +125,7 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr &img_msg)
   {
     img0Buf.pop();
   }
+
   img0Buf.push(img_msg);
   mBufMutex.unlock();
 }
@@ -211,7 +212,8 @@ void ImageGrabber::SyncWithImu()
         while( !mpImuGb->imuBuf.empty() &&
                mpImuGb->imuBuf.front()->header.stamp.toSec() <= tIm )
         {
-          double t = mpImuGb->imuBuf.front()->header.stamp.toSec();
+          // todo ： 时间补偿 该值由 kalibr 的标定报告给出
+          double t = mpImuGb->imuBuf.front()->header.stamp.toSec() + 0.066;
           cv::Point3f acc(mpImuGb->imuBuf.front()->linear_acceleration.x,
                           mpImuGb->imuBuf.front()->linear_acceleration.y,
                           mpImuGb->imuBuf.front()->linear_acceleration.z);

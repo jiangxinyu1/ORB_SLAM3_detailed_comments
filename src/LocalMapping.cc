@@ -169,25 +169,26 @@ void LocalMapping::Run()
         // 当前地图中关键帧数目大于2个
         if(mpAtlas->KeyFramesInMap()>2)
         {
-          // Step 6.1 处于IMU模式并且当前关键帧所在的地图已经完成IMU初始化
+          // Step 6.1 处于IMU模式并且当前关键帧所在的地图已经完成纯惯性的IMU初始化
           if(mbInertial && mpCurrentKeyFrame->GetMap()->isImuInitialized())
           {
             // 计算上一关键帧到当前关键帧相机光心的距离 + 上上关键帧到上一关键帧相机光心的距离
             float dist = (mpCurrentKeyFrame->mPrevKF->GetCameraCenter() - mpCurrentKeyFrame->GetCameraCenter()).norm() +
                          (mpCurrentKeyFrame->mPrevKF->mPrevKF->GetCameraCenter() - mpCurrentKeyFrame->mPrevKF->GetCameraCenter()).norm();
             // 如果距离大于5厘米，记录当前KF和上一KF时间戳的差，累加到mTinit
-            if(dist>0.05)
+            if(dist>0.0005)
             {
               mTinit += mpCurrentKeyFrame->mTimeStamp - mpCurrentKeyFrame->mPrevKF->mTimeStamp;
             }
+
             // 当前关键帧所在的地图尚未完成IMU BA2（IMU第三阶段初始化）
             if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2())
             {
               // 如果累计时间差小于10s 并且 距离小于2厘米，认为运动幅度太小，不足以初始化IMU，将mbBadImu设置为true
-              // to
-              if((mTinit<3.f) && (dist<0.002))
+              if((mTinit < 10.f) && (dist<0.002))
               {
                 cout << "Not enough motion for initializing. Reseting..." << endl;
+                std::cout << "mTinit = " << mTinit << ",dist = " << dist << "\n";
                 unique_lock<mutex> lock(mMutexReset);
                 mbResetRequestedActiveMap = true;
                 mpMapToReset = mpCurrentKeyFrame->GetMap();
@@ -264,10 +265,7 @@ void LocalMapping::Run()
           {
             InitializeIMU(1e2, 1e5, true);
           }
-
         }
-
-
         // Check redundant local Keyframes
         // 跟踪中关键帧插入条件比较松，交给LocalMapping线程的关键帧会比较密，这里再删除冗余
         // Step 8 检测并剔除当前帧相邻的关键帧中冗余的关键帧
@@ -291,7 +289,7 @@ void LocalMapping::Run()
             if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA1())
             {
               // 如果累计时间差大于5s，开始VIBA1（IMU第二阶段初始化）
-              if (mTinit>5.0f)
+              if (mTinit>10.0f)
               {
                 std::cout << "debug............................... -> " << " IMU第二次初始化 InitializeIMU" << "\n";
                 cout << "start VIBA 1" << endl;
@@ -308,7 +306,7 @@ void LocalMapping::Run()
               // 当前关键帧所在的地图还未完成VIBA 2
             else if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2())
             {
-              if (mTinit>10.0f)
+              if (mTinit>15.0f)
               {
                 std::cout << "start VIBA 2" << endl;
                 std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
@@ -1612,31 +1610,27 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   const int N = vpKF.size();
   IMU::Bias b(0,0,0,0,0,0);
 
-  // Compute and KF velocities mRwg estimation
-  // 在IMU连一次初始化都没有做的情况下
+  // 给定优化的初值-速度-重力方向 Compute and KF velocities mRwg init estimation
   if (!mpCurrentKeyFrame->GetMap()->isImuInitialized())
   {
+    // 在IMU连一次初始化都没有做的情况下，通过速度计算
     Eigen::Matrix3f Rwg;
     Eigen::Vector3f dirG;
     dirG.setZero();
-
     int have_imu_num = 0;
     for(vector<KeyFrame*>::iterator itKF = vpKF.begin(); itKF!=vpKF.end(); itKF++)
     {
-      if (!(*itKF)->mpImuPreintegrated)
-        continue;
-      if (!(*itKF)->mPrevKF)
-        continue;
-
+      // 此关键帧没有预积分信息或者没有上一个关键帧，跳过
+      if (!(*itKF)->mpImuPreintegrated) {continue;}
+      if (!(*itKF)->mPrevKF) {continue;}
       have_imu_num++;
-      // 初始化时关于速度的预积分定义Ri.t()*(s*Vj - s*Vi - Rwg*g*tij)
+      // 初始化时关于速度的预积分定义 Ri.t()*(s*Vj - s*Vi - Rwg*g*tij)
       dirG -= (*itKF)->mPrevKF->GetImuRotation() * (*itKF)->mpImuPreintegrated->GetUpdatedDeltaVelocity();
       // 求取实际的速度，位移/时间
       Eigen::Vector3f _vel = ((*itKF)->GetImuPosition() - (*itKF)->mPrevKF->GetImuPosition())/(*itKF)->mpImuPreintegrated->dT;
       (*itKF)->SetVelocity(_vel);
       (*itKF)->mPrevKF->SetVelocity(_vel);
     }
-
     if (have_imu_num < 6)
     {
       cout << "imu初始化失败, 由于带有imu预积分信息的关键帧数量太少" << endl;
@@ -1644,7 +1638,6 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
       mbBadImu = true;
       return;
     }
-
     // dirG = sV1 - sVn + n*Rwg*g*t
     // 归一化，约等于重力在世界坐标系下的方向
     dirG = dirG/dirG.norm();
@@ -1666,7 +1659,6 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
 //             0.012826173916810839,   0.34661612293487593,  -0.93791938877419911,
 //             -0.017462557230840548,   0.93793114308290282,   0.34638165783353803;
     mRwg = Rwg.cast<double>();
-
     std::cout << "Rwg Init = " <<  mRwg << "\n";
     Eigen::Vector3d eulerAngle = mRwg.eulerAngles(2, 1, 0);
     std::cout << "eulerAngle init  = " <<  eulerAngle * (180 / M_PI) << std::endl;  //45 -0 0
@@ -1674,6 +1666,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   }
   else
   {
+    // 非第一次imu初始化
 //    Eigen::Matrix3f Rwg;
 //    Rwg <<   0.99976524043941206,   0.01193571953895755,  0.018082871474901185,
 //             0.012826173916810839,   0.34661612293487593,  -0.93791938877419911,
@@ -1684,6 +1677,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     mba = mpCurrentKeyFrame->GetAccBias().cast<double>();
   }
 
+  // 设置 scale 的初值
   mScale=1;
 
   // 暂时没发现在别的地方出现过
@@ -1719,11 +1713,11 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   Eigen::Vector3d eulerAngle = mRwg.eulerAngles(2, 1, 0);
   std::cout << "eulerAngle = " <<  eulerAngle * (180 / M_PI) << std::endl;  //45 -0 0
 
-  // 到此时为止，前面做的东西没有改变map
 
   // Before this line we are not changing the map
   {
     unique_lock<mutex> lock(mpAtlas->GetCurrentMap()->mMutexMapUpdate);
+
     // 尺度变化超过设定值，或者非单目时（无论带不带imu，但这个函数只在带imu时才执行，所以这个可以理解为双目imu）
     if ((fabs(mScale - 1.f) > 0.00001) || !mbMonocular)
     {
@@ -1739,14 +1733,17 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     // 在之前没有初始化成功情况下（此时刚刚初始化成功）对每一帧都标记，后面的kf全部都在tracking里面标记为true
     // 也就是初始化之前的那些关键帧即使有imu信息也不算
     if (!mpAtlas->isImuInitialized())
-      for (int i = 0; i < N; i++) {
+    {
+      for (int i = 0; i < N; i++)
+      {
         KeyFrame *pKF2 = vpKF[i];
         pKF2->bImu = true;
       }
+    }
   }
 
   // TODO 这步更新是否有必要做待研究，0.4版本是放在FullInertialBA下面做的
-  // 这个版本FullInertialBA不直接更新位姿及三位点了
+  // 这个版本 FullInertialBA 不直接更新位姿及三位点了
   mpTracker->UpdateFrameIMU(1.0,vpKF[0]->GetImuBias(),mpCurrentKeyFrame);
 
   // 设置经过初始化了
@@ -1918,12 +1915,9 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     delete *lit;
   }
   mlNewKeyFrames.clear();
-
   mpTracker->mState=Tracking::OK;
   bInitializing = false;
-
   mpCurrentKeyFrame->GetMap()->IncreaseChangeIndex();
-
   return;
 }
 

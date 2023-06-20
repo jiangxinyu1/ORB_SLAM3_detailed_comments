@@ -10,16 +10,16 @@ Camera.type: "PinHole"
 # Camera calibration and distortion parameters (OpenCV)
 # 1033.35702021 1034.58717136 634.3109831 376.01589405
 # k1 k2 p1 p2 0.09181354 -0.13853183 0.0046861 -0.000042
-Camera.fx: 1033.35702021
-Camera.fy: 1034.58717136
-Camera.cx: 634.3109831
-Camera.cy: 376.01589405
+Camera.fx: 804.058815757652
+Camera.fy: 802.4441475914241
+Camera.cx: 637.7839854995433
+Camera.cy: 379.72739328572993
 
-Camera.k1: 0.09181354
-Camera.k2: -0.13853183
+Camera.k1: 0.043000049562063984
+Camera.k2: -0.11647548473247603
 #Camera.k3: 0.00000000001
-Camera.p1: 0.0046861
-Camera.p2: -0.000042
+Camera.p1: 0.0024707349454371544
+Camera.p2: -0.0008907484589305393
 
 # Camera frames per second
 Camera.fps: 15.0
@@ -38,17 +38,17 @@ Tbc: !!opencv-matrix
   rows: 4
   cols: 4
   dt: f
-  data: [ -0.00953499, 0.99980879, 0.01707241, 0.00005858,
-           0.99992411, 0.00966651, -0.00763801, -0.00020304,
-          -0.00780158, 0.01699829, -0.99982508, 0.00001429,
+  data: [ -0.00328703, 0.99994907, 0.00954209, -0.000125,
+           0.99991735, 0.00316802, 0.01245992, 0.00015166,
+          0.01242906, 0.00958226, -0.99987684, -0.00003285,
           0.0,        0.0,        0.0,        1.0 ]
 
 # IMU noise
-IMU.NoiseGyro: 6.4190421491705540e-04
-IMU.NoiseAcc: 2.8138017235431984e-02
-IMU.GyroWalk: 2.3553045282732546e-06
-IMU.AccWalk: 7.1952095806215616e-04
-IMU.Frequency: 211
+IMU.NoiseGyro:  0.000641904214917
+IMU.NoiseAcc: 0.0281380172354
+IMU.GyroWalk: 2.35530452827e-06
+IMU.AccWalk: 0.000719520958062
+IMU.Frequency: 228
 
 # Do not insert KFs when recently lost
 IMU.InsertKFsWhenLost: 1

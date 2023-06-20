@@ -280,7 +280,7 @@ namespace ORB_SLAM3
 
     // 将0~360的数转换到0~HISTO_LENGTH的系数
     //! 原作者代码是 const float factor = 1.0f/HISTO_LENGTH; 是错误的，更改为下面代码
-    // const float factor = HISTO_LENGTH/360.0f;
+    //const float factor = HISTO_LENGTH/360.0f;
     const float factor = 1.0f/HISTO_LENGTH;
 
     // We perform the matching over ORB that belong to the same vocabulary node (at a certain level)
@@ -930,11 +930,12 @@ namespace ORB_SLAM3
     // Step 2 构建旋转直方图，HISTO_LENGTH = 30
     vector<int> rotHist[HISTO_LENGTH];
     for(int i=0;i<HISTO_LENGTH;i++)
+    {
       rotHist[i].reserve(500);
-
+    }
     //! 原作者代码是 const float factor = 1.0f/HISTO_LENGTH; 是错误的，更改为下面代码
-    // const float factor = HISTO_LENGTH/360.0f;
-    const float factor = 1.0f/HISTO_LENGTH;
+    const float factor = HISTO_LENGTH/360.0f;
+    // const float factor = 1.0f/HISTO_LENGTH;
 
     int nmatches = 0;
 
