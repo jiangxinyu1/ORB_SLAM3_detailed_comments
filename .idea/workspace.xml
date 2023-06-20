@@ -47,8 +47,10 @@
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/G2oTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/G2oTypes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/static_imu_init.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/static_imu_init.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/static_imu_init.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/static_imu_init.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -338,7 +340,7 @@
       <workItem from="1686033186146" duration="11000" />
       <workItem from="1686448775530" duration="15000" />
       <workItem from="1686448799566" duration="4445000" />
-      <workItem from="1686911600478" duration="71288000" />
+      <workItem from="1686911600478" duration="72034000" />
     </task>
     <servers />
   </component>

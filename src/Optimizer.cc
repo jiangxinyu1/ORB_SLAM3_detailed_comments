@@ -3752,7 +3752,7 @@ void Optimizer::InertialOptimization(Map *pMap,
   // step 5 : 添加关于重力方向 Gravity 的节点
   VertexGDir *VGDir = new VertexGDir(Rwg);
   VGDir->setId(maxKFid * 2 + 4);
-  VGDir->setFixed(false); // 参与优化，设置为false
+  VGDir->setFixed(false);
   optimizer.addVertex(VGDir);
 
   // step 6 : 添加关于视觉尺度 Scale 的节点

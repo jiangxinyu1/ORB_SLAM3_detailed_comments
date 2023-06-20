@@ -919,32 +919,32 @@ public:
 /**
  * @brief 根据给定值的加速度计先验边，目的是把优化量维持在先验附近
  */
-//  class EdgePriorGravity : public g2o::BaseUnaryEdge<3, Eigen::Matrix3d, VertexGDir>
-//  {
-//  public:
-//    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-//
-//    EdgePriorGravity(const Eigen::Matrix3d &gDirprior_) : gDirprior(gDirprior_.cast<double>()) {}
-//
-//    virtual bool read(std::istream &is) { return false; }
-//    virtual bool write(std::ostream &os) const { return false; }
-//
-//    void computeError()
-//    {
-//      const VertexGDir *VA = static_cast<const VertexGDir *>(_vertices[0]);
-//      _error = gDirprior.transpose()
-//    }
-//    virtual void linearizeOplus();
-//
-//    Eigen::Matrix<double, 3, 3> GetHessian()
-//    {
-//      linearizeOplus();
-//      return _jacobianOplusXi.transpose() * information() * _jacobianOplusXi;
-//    }
-//
-//    const Eigen::Matrix3d gDirprior;
-//  };
-//
+  class EdgePriorGravity : public g2o::BaseUnaryEdge<3, Eigen::Matrix3d, VertexGDir>
+  {
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    EdgePriorGravity(const Eigen::Matrix3d &gDirprior_) : gDirprior(gDirprior_.cast<double>()) {}
+
+    virtual bool read(std::istream &is) { return false; }
+    virtual bool write(std::ostream &os) const { return false; }
+
+    void computeError()
+    {
+      const VertexGDir *VA = static_cast<const VertexGDir *>(_vertices[0]);
+      _error = gDirprior.transpose()
+    }
+    virtual void linearizeOplus();
+
+    Eigen::Matrix<double, 3, 3> GetHessian()
+    {
+      linearizeOplus();
+      return _jacobianOplusXi.transpose() * information() * _jacobianOplusXi;
+    }
+
+    const Eigen::Matrix3d gDirprior;
+  };
+
 
 /**
  * @brief 根据给定值的陀螺仪先验边，目的是把优化量维持在先验附近

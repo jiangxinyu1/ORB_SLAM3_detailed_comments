@@ -27,7 +27,7 @@ bool StaticIMUInit::AddIMU(const ORB_SLAM3::IMU::Point& imu)
     init_imu_deque_.push_back(imu);
     // 初始化经过时间
     double init_time = imu.t - init_start_time_;
-    std::cout << "init_time= " << init_time << "\n";
+    std::cout << "init_time= " << init_time << "Dont move !!! \n";
     if (init_time > options_.init_time_seconds_) 
     {
       // 尝试初始化逻辑
@@ -83,19 +83,6 @@ bool StaticIMUInit::TryInit()
     ComputeMeanAndCovDiag(init_imu_deque_,mean_acce,mean_gyro);
     init_bg_ = mean_gyro;
     init_ba_ = mean_acce;
-
-    // （4）检查IMU噪声，如果噪声的模长大于阈值，认为静止初始化失败
-//    if (cov_gyro_.norm() > options_.max_static_gyro_var)
-//    {
-//        LOG(ERROR) << "陀螺仪测量噪声太大" << cov_gyro_.norm() << " > " << options_.max_static_gyro_var;
-//        return false;
-//    }
-//    if (cov_acce_.norm() > options_.max_static_acce_var)
-//    {
-//        LOG(ERROR) << "加计测量噪声太大" << cov_acce_.norm() << " > " << options_.max_static_acce_var;
-//        return false;
-//    }
-
 
     // (5) 世界坐标系下重力方向的定义
     Eigen::Vector3f gravInWorldNormed(0.0f, 0.0f, -1.0f);

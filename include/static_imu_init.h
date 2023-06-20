@@ -1,5 +1,5 @@
 //
-// Created by xiang on 2021/11/11.
+// Created by xinyu on 2021/11/11.
 //
 
 #ifndef SLAM_IN_AUTO_DRIVING_STATIC_IMU_INIT_H
