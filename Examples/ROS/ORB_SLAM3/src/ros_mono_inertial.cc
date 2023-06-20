@@ -31,8 +31,9 @@
 
 #include<opencv2/core/core.hpp>
 
-#include"include/System.h"
-#include"../include/ImuTypes.h"
+#include "include/System.h"
+#include "../include/ImuTypes.h"
+#include "../static_imu_init.h"
 
 using namespace std;
 
@@ -42,7 +43,9 @@ public:
     ImuGrabber(){};
     void GrabImu(const sensor_msgs::ImuConstPtr &imu_msg);
     queue<sensor_msgs::ImuConstPtr> imuBuf;
+    queue<sensor_msgs::ImuConstPtr> imuBufForInit;
     std::mutex mBufMutex;
+    std::mutex mBufMutexForInit;
 };
 
 class ImageGrabber
@@ -55,6 +58,7 @@ public:
     void GrabImage(const sensor_msgs::ImageConstPtr& msg);
     cv::Mat GetImage(const sensor_msgs::ImageConstPtr &img_msg);
     void SyncWithImu();
+    void InitImu();
 
     // 存储图像的双端队列
     std::queue<sensor_msgs::ImageConstPtr> img0Buf;
@@ -113,6 +117,9 @@ int main(int argc, char **argv)
                                          &ImageGrabber::GrabImage,
                                          &igb);
   std::thread sync_thread(&ImageGrabber::SyncWithImu,&igb);
+
+  std::thread imu_init_thread(&ImageGrabber::InitImu,&igb);
+
   ros::spin();
   return 0;
 }
@@ -246,7 +253,38 @@ void ImuGrabber::GrabImu(const sensor_msgs::ImuConstPtr &imu_msg)
   mBufMutex.lock();
   imuBuf.push(imu_msg);
   mBufMutex.unlock();
+
+  mBufMutexForInit.lock();
+  imuBufForInit.push(imu_msg);
+  mBufMutexForInit.unlock();
   return;
+}
+
+void ImageGrabber::InitImu()
+{
+  sad::StaticIMUInit imu_init;
+  while(1)
+  {
+    if ( ! imu_init.InitSuccess() )
+    {
+      mpImuGb->mBufMutexForInit.lock();
+      while ( !mpImuGb->imuBufForInit.empty() )
+      {
+        double t = (mpImuGb->imuBufForInit.front()->header.stamp.toSec()+ 0.066);
+        cv::Point3f acc(mpImuGb->imuBufForInit.front()->linear_acceleration.x,
+                        mpImuGb->imuBufForInit.front()->linear_acceleration.y,
+                        mpImuGb->imuBufForInit.front()->linear_acceleration.z);
+        cv::Point3f gyr(mpImuGb->imuBufForInit.front()->angular_velocity.x,
+                        mpImuGb->imuBufForInit.front()->angular_velocity.y,
+                        mpImuGb->imuBufForInit.front()->angular_velocity.z);
+        imu_init.AddIMU(ORB_SLAM3::IMU::Point(acc,gyr,t));
+        mpImuGb->imuBufForInit.pop();
+      }
+      mpImuGb->mBufMutexForInit.unlock();
+    }
+    std::chrono::milliseconds tSleep(10);
+    std::this_thread::sleep_for(tSleep);
+  }
 }
 
 

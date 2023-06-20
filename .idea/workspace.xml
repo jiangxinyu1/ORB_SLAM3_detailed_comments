@@ -47,14 +47,8 @@
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Monocular/oak_mono_i.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular/oak_mono_i.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/G2oTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/G2oTypes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LoopClosing.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LoopClosing.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ORBmatcher.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/ORBmatcher.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,6 +104,11 @@
   }
 }</component>
   <component name="RunManager" selected="CMake 应用程序.mono_euroc">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ORB_SLAM3" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="ORB_SLAM3" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -339,7 +338,7 @@
       <workItem from="1686033186146" duration="11000" />
       <workItem from="1686448775530" duration="15000" />
       <workItem from="1686448799566" duration="4445000" />
-      <workItem from="1686911600478" duration="49145000" />
+      <workItem from="1686911600478" duration="71288000" />
     </task>
     <servers />
   </component>
