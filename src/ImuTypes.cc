@@ -31,6 +31,9 @@ namespace IMU
 
 const float eps = 1e-4;
 
+bool blStaticInitSuccess = false;
+Eigen::Vector3f gravInCam0FromStaticInit (0,0,0);
+
 /**
  * @brief 强制让R变成一个正交矩阵
  * @param R 待优化的旋转矩阵
@@ -44,6 +47,17 @@ Eigen::Matrix3f NormalizeRotation(const Eigen::Matrix3f &R)
   // 3. thin会损失一部分数据，但是会加快计算，对于大型矩阵解算方程时，可以用thin加速得到结果
   Eigen::JacobiSVD<Eigen::Matrix3f> svd(R, Eigen::ComputeFullU | Eigen::ComputeFullV);
   return svd.matrixU() * svd.matrixV().transpose();
+}
+
+double fetchAngle_gCam_yCam(const Eigen::Matrix3d & Rwg_)
+{
+  Eigen::Vector3d gI_ = Eigen::Vector3d(0,0,-1);
+  Eigen::Vector3d cY = Eigen::Vector3d(0,1,0);
+  Eigen::Vector3d gCamEst = Rwg_ * gI_;
+  gCamEst = gCamEst / gCamEst.norm();
+  Eigen::Vector3d c = gCamEst.cross(cY);
+  auto res = atan2(c.norm(),gCamEst.dot(cY));
+  return (res*56.6667);
 }
 
 /**

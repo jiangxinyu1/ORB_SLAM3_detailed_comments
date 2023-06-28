@@ -919,30 +919,44 @@ public:
 /**
  * @brief 根据给定值的加速度计先验边，目的是把优化量维持在先验附近
  */
-  class EdgePriorGravity : public g2o::BaseUnaryEdge<3, Eigen::Matrix3d, VertexGDir>
+  // (1) 误差维度 3  err = gc - RgI
+class EdgePriorGravity : public g2o::BaseUnaryEdge<3, Eigen::Vector3d, VertexGDir>
+{
+  public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  EdgePriorGravity(const Eigen::Vector3d &gCamPrior_) : gCamPrior(gCamPrior_.cast<double>()) {}
+  virtual bool read(std::istream &is) { return false; }
+  virtual bool write(std::ostream &os) const { return false; }
+  void computeError()
+  {
+    const VertexGDir *VGDir = static_cast<const VertexGDir *>(_vertices[0]);
+    _error = gCamPrior - VGDir->estimate().Rwg * Eigen::Vector3d(0,0,-9.81);
+  }
+//  virtual void linearizeOplus();
+  const Eigen::Vector3d gCamPrior;
+};
+
+  class EdgePriorGravity2 : public g2o::BaseUnaryEdge<1, double, VertexGDir>
   {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-    EdgePriorGravity(const Eigen::Matrix3d &gDirprior_) : gDirprior(gDirprior_.cast<double>()) {}
-
+    EdgePriorGravity2(const double &thetaPrior_) : thetaPrior(thetaPrior_) {}
     virtual bool read(std::istream &is) { return false; }
     virtual bool write(std::ostream &os) const { return false; }
-
-    void computeError()
+    void computeError() override
     {
-      const VertexGDir *VA = static_cast<const VertexGDir *>(_vertices[0]);
-      _error = gDirprior.transpose()
+      const VertexGDir *VGDir = static_cast<const VertexGDir *>(_vertices[0]);
+      Eigen::Vector3d gI = Eigen::Vector3d(0,0,-1);
+      Eigen::Vector3d cY = Eigen::Vector3d(0,1,0);
+      Eigen::Vector3d gCamEst = VGDir->estimate().Rwg * gI;
+      gCamEst = gCamEst / gCamEst.norm();
+      Eigen::Vector3d c = gCamEst.cross(cY);
+      auto a = atan2(c.norm(),gCamEst.dot(cY));
+      _error = static_cast<Eigen::Matrix<double, 1, 1>>(thetaPrior - a);
+      std::cout << "erro = " << _error << "\n";
     }
-    virtual void linearizeOplus();
-
-    Eigen::Matrix<double, 3, 3> GetHessian()
-    {
-      linearizeOplus();
-      return _jacobianOplusXi.transpose() * information() * _jacobianOplusXi;
-    }
-
-    const Eigen::Matrix3d gDirprior;
+//  virtual void linearizeOplus();
+    const double thetaPrior;
   };
 
 

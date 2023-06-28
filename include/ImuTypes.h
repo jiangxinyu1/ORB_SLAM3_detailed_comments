@@ -42,6 +42,9 @@ namespace IMU
 
 const float GRAVITY_VALUE=9.81;
 
+extern bool blStaticInitSuccess;
+extern Eigen::Vector3f gravInCam0FromStaticInit;
+
 //IMU measurement (gyro, accelerometer and timestamp)
 class Point
 {
@@ -258,6 +261,7 @@ Eigen::Matrix3f InverseRightJacobianSO3(const float &x, const float &y, const fl
 Eigen::Matrix3f InverseRightJacobianSO3(const Eigen::Vector3f &v);
 
 Eigen::Matrix3f NormalizeRotation(const Eigen::Matrix3f &R);
+double fetchAngle_gCam_yCam(const Eigen::Matrix3d & Rwg_);
 
 }
 

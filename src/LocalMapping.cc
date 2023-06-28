@@ -176,7 +176,7 @@ void LocalMapping::Run()
             float dist = (mpCurrentKeyFrame->mPrevKF->GetCameraCenter() - mpCurrentKeyFrame->GetCameraCenter()).norm() +
                          (mpCurrentKeyFrame->mPrevKF->mPrevKF->GetCameraCenter() - mpCurrentKeyFrame->mPrevKF->GetCameraCenter()).norm();
             // 如果距离大于5厘米，记录当前KF和上一KF时间戳的差，累加到mTinit
-            if(dist>0.0005)
+            if(dist>0.0001)
             {
               mTinit += mpCurrentKeyFrame->mTimeStamp - mpCurrentKeyFrame->mPrevKF->mTimeStamp;
             }
@@ -185,7 +185,7 @@ void LocalMapping::Run()
             if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2())
             {
               // 如果累计时间差小于10s 并且 距离小于2厘米，认为运动幅度太小，不足以初始化IMU，将mbBadImu设置为true
-              if((mTinit < 10.f) && (dist<0.002))
+              if((mTinit < 5.f) && (dist<0.0000001))
               {
                 cout << "Not enough motion for initializing. Reseting..." << endl;
                 std::cout << "mTinit = " << mTinit << ",dist = " << dist << "\n";
@@ -197,7 +197,8 @@ void LocalMapping::Run()
             }
             // 判断成功跟踪匹配的点数是否足够多
             // 条件---------1.1、跟踪成功的内点数目大于75-----1.2、并且是单目--或--2.1、跟踪成功的内点数目大于100-----2.2、并且不是单目
-            bool bLarge = ((mpTracker->GetMatchesInliers()>75)&&mbMonocular)||((mpTracker->GetMatchesInliers()>100)&&!mbMonocular);
+            bool bLarge = ((mpTracker->GetMatchesInliers()>75)&&mbMonocular) ||
+                          ((mpTracker->GetMatchesInliers()>100)&&!mbMonocular);
             // 局部地图+IMU一起优化，优化关键帧位姿、地图点、IMU参数
             std::cout << "debug............................... -> " << " 局部地图+IMU-BA LocalInertialBA" << "\n";
             Optimizer::LocalInertialBA(mpCurrentKeyFrame,
@@ -227,7 +228,6 @@ void LocalMapping::Run()
                                              num_edges_BA);
             b_doneLBA = true;
           }
-
         }
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_EndLBA = std::chrono::steady_clock::now();
@@ -295,10 +295,17 @@ void LocalMapping::Run()
                 cout << "start VIBA 1" << endl;
                 mpCurrentKeyFrame->GetMap()->SetIniertialBA1();
                 if (mbMonocular)
+                {
                   InitializeIMU(1.f, 1e5, true);
+                }
                 else
+                {
                   InitializeIMU(1.f, 1e5, true);
+                }
 
+                auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
+                std::cout << "after VIBA 1 opt. , fetchAngle_gCam_yCam = " << a << "degree .\n"
+                          << "--------------------------------------scale = " << mScale  << "\n";
                 cout << "end VIBA 1" << endl;
               }
             }
@@ -312,9 +319,17 @@ void LocalMapping::Run()
                 std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
                 mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
                 if (mbMonocular)
+                {
                   InitializeIMU(0.f, 0.f, true);
+                }
                 else
+                {
                   InitializeIMU(0.f, 0.f, true);
+                }
+
+                auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
+                std::cout << "after VIBA 2 opt. , fetchAngle_gCam_yCam = " << a << "degree .\n"
+                          << "--------------------------------------scale = " << mScale  << "\n";
 
                 cout << "end VIBA 2" << endl;
               }
@@ -322,7 +337,7 @@ void LocalMapping::Run()
 
             // scale refinement
             // Step 9.3 在关键帧小于100时，会在满足一定时间间隔后多次进行尺度、重力方向优化
-            if (((mpAtlas->KeyFramesInMap())<=200) &&
+            if (((mpAtlas->KeyFramesInMap())<=100) &&
                 ((mTinit>25.0f && mTinit<25.5f)||
                  (mTinit>35.0f && mTinit<35.5f)||
                  (mTinit>45.0f && mTinit<45.5f)||
@@ -334,6 +349,9 @@ void LocalMapping::Run()
                 // 使用了所有关键帧，但只优化尺度和重力方向以及速度和偏执（其实就是一切跟惯性相关的量）
                 std::cout << "debug............................... -> " << " 尺度、重力方向优化 ScaleRefinement" << "\n";
                 ScaleRefinement();
+                auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
+                std::cout << "ScaleRefinement opt. , fetchAngle_gCam_yCam = " << a << "degree .\n"
+                          << "--------------------------------------scale = " << mScale  << "\n";
               }
 
             }
@@ -1563,15 +1581,12 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     minTime = 1.0;
     nMinKF = 10;
   }
-
   // 当前地图大于10帧才进行初始化
-  if(mpAtlas->KeyFramesInMap()<nMinKF)
+  if(mpAtlas->KeyFramesInMap() < nMinKF )
   {
-    std::cout << "当前地图大于10帧才进行初始化... return\n";
+    std::cout << " just " << mpAtlas->KeyFramesInMap() <<  " keyFrame , < 10 , continue ...\n";
     return;
   }
-
-
   // Retrieve all keyframe in temporal order
   // 按照顺序存放目前地图里的关键帧，顺序按照前后顺序来，包括当前关键帧
   list<KeyFrame*> lpKF;
@@ -1654,31 +1669,21 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     Eigen::Vector3f vzg = v*ang/nv;
     // 获得重力坐标系到世界坐标系的旋转矩阵的初值
     Rwg = Sophus::SO3f::exp(vzg).matrix();
-    // 设置扫地机下安装角度下的初值
-//    Rwg <<   0.99976524043941206,   0.01193571953895755,  0.018082871474901185,
-//             0.012826173916810839,   0.34661612293487593,  -0.93791938877419911,
-//             -0.017462557230840548,   0.93793114308290282,   0.34638165783353803;
     mRwg = Rwg.cast<double>();
     std::cout << "Rwg Init = " <<  mRwg << "\n";
-    Eigen::Vector3d eulerAngle = mRwg.eulerAngles(2, 1, 0);
-    std::cout << "eulerAngle init  = " <<  eulerAngle * (180 / M_PI) << std::endl;  //45 -0 0
+    auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
+    std::cout << "set gCam init , fetchAngle_gCam_yCam = " << a << " degree .\n";
     mTinit = mpCurrentKeyFrame->mTimeStamp-mFirstTs;
   }
   else
   {
-    // 非第一次imu初始化
-//    Eigen::Matrix3f Rwg;
-//    Rwg <<   0.99976524043941206,   0.01193571953895755,  0.018082871474901185,
-//             0.012826173916810839,   0.34661612293487593,  -0.93791938877419911,
-//            -0.017462557230840548,   0.93793114308290282,   0.34638165783353803;
-//    mRwg = Rwg.cast<double>();
-     mRwg = Eigen::Matrix3d::Identity();
+    mRwg = Eigen::Matrix3d::Identity();
     mbg = mpCurrentKeyFrame->GetGyroBias().cast<double>();
     mba = mpCurrentKeyFrame->GetAccBias().cast<double>();
   }
 
   // 设置 scale 的初值
-  mScale=1;
+  mScale = 1;
 
   // 暂时没发现在别的地方出现过
   mInitTime = mpTracker->mLastFrame.mTimeStamp-vpKF.front()->mTimeStamp;
@@ -1686,6 +1691,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
   // 3. 计算残差及偏置差，优化尺度重力方向及速度偏置，偏置先验为0，双目时不优化尺度
   std::cout << "debug............................... -> " << " 纯惯性初始化 " << "\n";
+//  ORB_SLAM3::IMU::blStaticInitSuccess
+  Eigen::Vector3d gCamPrior = ORB_SLAM3::IMU::gravInCam0FromStaticInit.cast<double>();
   Optimizer::InertialOptimization(mpAtlas->GetCurrentMap(),
                                   mRwg,
                                   mScale,
@@ -1693,6 +1700,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
                                   mba,
                                   mbMonocular,
                                   infoInertial,
+                                  gCamPrior,
+                                  ORB_SLAM3::IMU::blStaticInitSuccess,
                                   false,
                                   false,
                                   priorG,
@@ -1710,9 +1719,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   std::cout << "************************** imu first init sucess ****************************** \n";
   std::cout << "mRwg after = \n" << mRwg << "\n";
   std::cout << "mScale = " << mScale <<  "\n";
-  Eigen::Vector3d eulerAngle = mRwg.eulerAngles(2, 1, 0);
-  std::cout << "eulerAngle = " <<  eulerAngle * (180 / M_PI) << std::endl;  //45 -0 0
-
+  auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
+  std::cout << "only imu first opt. , fetchAngle_gCam_yCam = " << a << "degree .\n";
 
   // Before this line we are not changing the map
   {
@@ -2035,3 +2043,4 @@ KeyFrame* LocalMapping::GetCurrKF()
 }
 
 } //namespace ORB_SLAM
+

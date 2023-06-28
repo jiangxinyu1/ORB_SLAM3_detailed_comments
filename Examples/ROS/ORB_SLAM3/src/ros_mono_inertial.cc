@@ -120,6 +120,7 @@ int main(int argc, char **argv)
 
   std::thread imu_init_thread(&ImageGrabber::InitImu,&igb);
 
+
   ros::spin();
   return 0;
 }
@@ -270,6 +271,7 @@ void ImageGrabber::InitImu()
       mpImuGb->mBufMutexForInit.lock();
       while ( !mpImuGb->imuBufForInit.empty() )
       {
+        // 通过kalibr标定OAK相机，需要做时间补偿
         double t = (mpImuGb->imuBufForInit.front()->header.stamp.toSec()+ 0.066);
         cv::Point3f acc(mpImuGb->imuBufForInit.front()->linear_acceleration.x,
                         mpImuGb->imuBufForInit.front()->linear_acceleration.y,

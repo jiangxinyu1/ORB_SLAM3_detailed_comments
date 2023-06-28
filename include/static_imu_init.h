@@ -22,7 +22,7 @@ class StaticIMUInit {
    public:
     struct Options {
         Options() {}
-        double init_time_seconds_ = 1.0;     // 静止时间
+        double init_time_seconds_ = 5.0;     // 静止时间
         int init_imu_queue_max_size_ = 20000;  // 初始化IMU队列最大长度
         int static_odom_pulse_ = 5;           // 静止时轮速计输出噪声
         double max_static_gyro_var = 0.5;     // 静态下陀螺测量方差

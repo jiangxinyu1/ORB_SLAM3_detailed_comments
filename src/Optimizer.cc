@@ -422,8 +422,8 @@ int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit
   linearSolver = new g2o::LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>();
   g2o::BlockSolverX *solver_ptr = new g2o::BlockSolverX(linearSolver);
   // (2) 使用块求解器构建高斯牛顿的求解器
-  g2o::OptimizationAlgorithmGaussNewton *solver =
-      new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
+  g2o::OptimizationAlgorithmLevenberg *solver =
+      new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   // (3) 构建优化问题
   g2o::SparseOptimizer optimizer;
   optimizer.setVerbose(false);
@@ -976,8 +976,8 @@ int Optimizer::PoseInertialOptimizationLastFrame(Frame *pFrame, bool bRecInit)
   linearSolver = new g2o::LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>();
   g2o::BlockSolverX *solver_ptr = new g2o::BlockSolverX(linearSolver);
   // 使用高斯牛顿求解器
-  g2o::OptimizationAlgorithmGaussNewton *solver =
-      new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
+  g2o::OptimizationAlgorithmLevenberg *solver =
+      new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
   optimizer.setAlgorithm(solver);
   optimizer.setVerbose(false);
 
@@ -3684,6 +3684,8 @@ void Optimizer::InertialOptimization(Map *pMap,
                                      Eigen::Vector3d &ba,
                                      bool bMono,
                                      Eigen::MatrixXd &covInertial,
+                                     const Eigen::Vector3d &gInCam,
+                                     bool blStaticInitSuccessed,
                                      bool bFixedVel,
                                      bool bGauss,
                                      float priorG,
@@ -3833,14 +3835,43 @@ void Optimizer::InertialOptimization(Map *pMap,
     }
   }
 
-  // step 10 ：开始优化
-  // Compute error for different scales
+  // step 10 : 如果当前的地图，还未做纯惯性的初始化，添加重力方向的的一元约束边（由静止初始化计算得来）
+  if ( !pMap->isImuInitialized())
+  {
+    const int mode = 1;
+
+    if ( mode == 1)
+    {
+      Eigen::Vector3d gravInCam (-0.015051675029098988,9.3558969497680664,-2.950098991394043);
+      EdgePriorGravity *egG = new EdgePriorGravity(gravInCam);
+      egG->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
+      double infoPriorGDir = 0.001;
+      epg->setInformation(infoPriorGDir * Eigen::Matrix3d::Identity());
+      optimizer.addEdge(egG);
+    }
+
+    if ( mode == 2 )
+    {
+      std::cout << "First Only Imu Initialized. add Angle constraints.";
+      double angle = 20/56.66667;
+      EdgePriorGravity2 *egG2 = new EdgePriorGravity2(angle);
+      egG2->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
+      double infoPriorVGDir = 0.1;
+      egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
+      optimizer.addEdge(egG2);
+    }
+  }
+
+
+
+  // step 11 ：开始优化
+  // Compute error for different scalesji
   std::set<g2o::HyperGraph::Edge *> setEdges = optimizer.edges();
   optimizer.setVerbose(false);
   optimizer.initializeOptimization();
   optimizer.optimize(its);
 
-  // step 11 ：获取优化的结果
+  // step 12 ：获取优化的结果
   scale = VS->estimate();
   VG = static_cast<VertexGyroBias *>(optimizer.vertex(maxKFid * 2 + 2));
   VA = static_cast<VertexAccBias *>(optimizer.vertex(maxKFid * 2 + 3));
@@ -3993,7 +4024,6 @@ void Optimizer::InertialOptimization(Map *pMap, Eigen::Vector3d &bg, Eigen::Vect
       if (!VP1 || !VV1 || !VG || !VA || !VP2 || !VV2 || !VGDir || !VS)
       {
         cout << "Error" << VP1 << ", " << VV1 << ", " << VG << ", " << VA << ", " << VP2 << ", " << VV2 << ", " << VGDir << ", " << VS << endl;
-
         continue;
       }
       EdgeInertialGS *ei = new EdgeInertialGS(pKFi->mpImuPreintegrated);
@@ -4055,7 +4085,7 @@ void Optimizer::InertialOptimization(Map *pMap, Eigen::Vector3d &bg, Eigen::Vect
 }
 
 /**
- * @brief 优化重力方向与尺度，LocalMapping::ScaleRefinement()中使用，优化目标有：
+ * @brief 只优化重力方向与尺度，LocalMapping::ScaleRefinement()中使用，优化目标有：
  * 重力方向与尺度
  * @param pMap 地图
  * @param Rwg 重力方向到速度方向的转角
@@ -4071,12 +4101,11 @@ void Optimizer::InertialOptimization(Map *pMap, Eigen::Matrix3d &Rwg, double &sc
   // Setup optimizer
   g2o::SparseOptimizer optimizer;
   g2o::BlockSolverX::LinearSolverType *linearSolver;
-
   linearSolver = new g2o::LinearSolverEigen<g2o::BlockSolverX::PoseMatrixType>();
-
   g2o::BlockSolverX *solver_ptr = new g2o::BlockSolverX(linearSolver);
+  // GN牛顿替换为LM
+  g2o::OptimizationAlgorithmLevenberg *solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
 
-  g2o::OptimizationAlgorithmGaussNewton *solver = new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
   optimizer.setAlgorithm(solver);
 
   // Set KeyFrame vertices (all variables are fixed)
@@ -4113,6 +4142,7 @@ void Optimizer::InertialOptimization(Map *pMap, Eigen::Matrix3d &Rwg, double &sc
   VGDir->setId(4 * (maxKFid + 1));
   VGDir->setFixed(false);
   optimizer.addVertex(VGDir);
+
   VertexScale *VS = new VertexScale(scale);
   VS->setId(4 * (maxKFid + 1) + 1);
   VS->setFixed(false);
@@ -4160,6 +4190,7 @@ void Optimizer::InertialOptimization(Map *pMap, Eigen::Matrix3d &Rwg, double &sc
       optimizer.addEdge(ei);
     }
   }
+
   // 5. 优化
   // Compute error for different scales
   optimizer.setVerbose(false);

@@ -4,6 +4,8 @@
 
 #include "static_imu_init.h"
 
+
+
 namespace sad {
 
 bool StaticIMUInit::AddIMU(const ORB_SLAM3::IMU::Point& imu)
@@ -27,7 +29,7 @@ bool StaticIMUInit::AddIMU(const ORB_SLAM3::IMU::Point& imu)
     init_imu_deque_.push_back(imu);
     // 初始化经过时间
     double init_time = imu.t - init_start_time_;
-    std::cout << "init_time= " << init_time << "Dont move !!! \n";
+    std::cout << "init_time= " << init_time << ",Dont move !!! \n";
     if (init_time > options_.init_time_seconds_) 
     {
       // 尝试初始化逻辑
@@ -60,6 +62,7 @@ bool StaticIMUInit::AddIMU(const ORB_SLAM3::IMU::Point& imu)
 //    current_time_ = odom.timestamp_;
 //    return true;
 //}
+
 
 // 尝试初始化
 bool StaticIMUInit::TryInit() 
@@ -109,14 +112,24 @@ bool StaticIMUInit::TryInit()
               << "\n nv = " << nv << ", v " << v.transpose() << "\n";
     Eigen::Matrix<float,3,3> Rcw_ = Sophus::SO3f::exp(vzg).matrix();
 
+    // (8) 计算重力向量在相机系下与相机系y轴的夹角
+    Eigen::Vector3f cy(0.0f, 1.0f, 0.0f);
+    Eigen::Vector3f c = gravInCamNormed.cross(cy);
+    auto a = atan2(c.norm(),gravInCamNormed.dot(cy));
+
     std::cout << "IMU 静止初始化成功，初始化时间= " << current_time_ - init_start_time_
               << "\nbg = " << init_bg_.transpose()
               << "\nba = " << init_ba_.transpose()
               << "\ngravInImu = " << gravity_Imu.transpose()
               << "\ngravInCam = " << gravInCam.transpose()
               << "\nnorm: " << gravity_Imu.norm() << "\n"
+              << "\nangle(gCam and gI) = " << ang*56.666667
+              << "\na = " << a *56.666667
               << "\n 验证 ：Rcw_ = \n" << Rcw_
               << "\n 验证：(Rcw_*gravInWorld ?= gravInCam) = \n"<<  Rcw_ * gravInWorld << "\n";
+
+    ORB_SLAM3::IMU::gravInCam0FromStaticInit = gravInCam;
+    ORB_SLAM3::IMU::blStaticInitSuccess = true;
     init_success_ = true;
     return true;
 }
