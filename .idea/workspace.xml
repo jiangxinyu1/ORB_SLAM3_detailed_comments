@@ -13,8 +13,8 @@
     <generated>
       <config projectName="ORB_SLAM3" targetName="g2o" />
       <config projectName="ORB_SLAM3" targetName="mono_tum" />
-      <config projectName="ORB_SLAM3" targetName="mono_tum_vi" />
       <config projectName="ORB_SLAM3" targetName="ORB_SLAM3" />
+      <config projectName="ORB_SLAM3" targetName="mono_tum_vi" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -25,23 +25,13 @@
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Monocular/oak_left_vi.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular/oak_left_vi.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Stereo-Inertial/stereo_inertial_realsense_D435i" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Stereo-Inertial/stereo_inertial_realsense_t265" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/G2oTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/G2oTypes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/ImuTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/ImuTypes.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/LocalMapping.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/LocalMapping.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/Map.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Map.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Optimizer.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Optimizer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/static_imu_init.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/static_imu_init.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImuTypes.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImuTypes.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LoopClosing.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LoopClosing.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/static_imu_init.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/static_imu_init.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,6 +88,11 @@
 }</component>
   <component name="RunManager" selected="CMake 应用程序.mono_tum">
     <configuration name="ORB_SLAM3" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ORB_SLAM3" TARGET_NAME="ORB_SLAM3" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -201,6 +196,7 @@
       <workItem from="1687847656885" duration="26888000" />
       <workItem from="1687934295804" duration="7925000" />
       <workItem from="1687943763787" duration="4494000" />
+      <workItem from="1688018118695" duration="4579000" />
     </task>
     <servers />
   </component>

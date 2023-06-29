@@ -176,6 +176,7 @@ protected:
 
     // 1.新地图做完纯惯性初始化之后，恢复尺度及并对齐重力方向，将此变量设置为true
     // 2.在清空地图时设置为false
+    // 3.标志是否完成第一阶段纯惯性初始化
     bool mbImuInitialized;
 
     int mnMapChange;

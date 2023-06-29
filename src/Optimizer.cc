@@ -1082,7 +1082,7 @@ int Optimizer::PoseInertialOptimizationLastFrame(Frame *pFrame, bool bRecInit)
           //  图像金字塔层数越高，可信度越差
           const float invSigma2 = pFrame->mvInvLevelSigma2[kpUn.octave] / unc2;
           // 设置该约束的信息矩阵
-          e->setInformation(Eigen::Matrix2d::Identity() * invSigma2);
+          e->setInformation(Eigen::Matrix2d::Identity() * invSigma2  );
 
           g2o::RobustKernelHuber *rk = new g2o::RobustKernelHuber;
           // 设置鲁棒核函数，避免其误差的平方项出现数值过大的增长 注：后续在优化2次后会用e->setRobustKernel(0)禁掉鲁棒核函数
@@ -3836,16 +3836,16 @@ void Optimizer::InertialOptimization(Map *pMap,
   }
 
   // step 10 : 如果当前的地图，还未做纯惯性的初始化，添加重力方向的的一元约束边（由静止初始化计算得来）
-  if ( !pMap->isImuInitialized())
+  if ( !pMap->isImuInitialized() )
   {
-    const int mode = 1;
+    const int mode = 0;
 
     if ( mode == 1)
     {
       Eigen::Vector3d gravInCam (-0.015051675029098988,9.3558969497680664,-2.950098991394043);
       EdgePriorGravity *egG = new EdgePriorGravity(gravInCam);
       egG->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
-      double infoPriorGDir = 0.001;
+      double infoPriorGDir = 1;
       epg->setInformation(infoPriorGDir * Eigen::Matrix3d::Identity());
       optimizer.addEdge(egG);
     }
@@ -3853,10 +3853,10 @@ void Optimizer::InertialOptimization(Map *pMap,
     if ( mode == 2 )
     {
       std::cout << "First Only Imu Initialized. add Angle constraints.";
-      double angle = 20/56.66667;
+      double angle = 20.0/56.66667;
       EdgePriorGravity2 *egG2 = new EdgePriorGravity2(angle);
       egG2->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
-      double infoPriorVGDir = 0.1;
+      double infoPriorVGDir = 1e3;
       egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
       optimizer.addEdge(egG2);
     }

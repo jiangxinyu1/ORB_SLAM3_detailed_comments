@@ -2577,7 +2577,7 @@ void Tracking::Track()
         // 当前帧距离上次重定位帧刚好等于1s，重置（还未实现 TODO）
         if(mCurrentFrame.mnId==(mnLastRelocFrameId+mnFramesToResetIMU))
         {
-          cout << "RESETING FRAME!!!" << endl;
+          std::cout << "RESETING FRAME!!!" << endl;
           ResetFrameIMU();
         }
         else if(mCurrentFrame.mnId>(mnLastRelocFrameId+30))
@@ -3566,8 +3566,8 @@ bool Tracking::TrackWithMotionModel()
     Verbose::PrintMess("Not enough matches!!", Verbose::VERBOSITY_NORMAL);
 
     // 存储匀速模型是失效的场景图
-    std::string imcid = std::to_string(mCurrentFrame.mnId);
-    cv::imwrite("/home/parallels/homedata/"+imcid+".png",mCurrentFrame.imgLeft);
+//    std::string imcid = std::to_string(mCurrentFrame.mnId);
+//    cv::imwrite("/home/parallels/homedata/"+imcid+".png",mCurrentFrame.imgLeft);
 
 
     if (mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)

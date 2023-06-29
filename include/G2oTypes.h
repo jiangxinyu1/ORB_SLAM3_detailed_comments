@@ -950,10 +950,9 @@ class EdgePriorGravity : public g2o::BaseUnaryEdge<3, Eigen::Vector3d, VertexGDi
       Eigen::Vector3d cY = Eigen::Vector3d(0,1,0);
       Eigen::Vector3d gCamEst = VGDir->estimate().Rwg * gI;
       gCamEst = gCamEst / gCamEst.norm();
-      Eigen::Vector3d c = gCamEst.cross(cY);
-      auto a = atan2(c.norm(),gCamEst.dot(cY));
-      _error = static_cast<Eigen::Matrix<double, 1, 1>>(thetaPrior - a);
-      std::cout << "erro = " << _error << "\n";
+      // Eigen::Vector3d c = gCamEst.cross(cY);
+      auto a = gCamEst.dot(cY);
+      _error = static_cast<Eigen::Matrix<double, 1, 1>>(cos(thetaPrior) - cos(a));
     }
 //  virtual void linearizeOplus();
     const double thetaPrior;

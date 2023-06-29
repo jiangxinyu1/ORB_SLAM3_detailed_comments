@@ -103,7 +103,7 @@ public:
 
     bool mbNotBA1;
     bool mbNotBA2;
-    bool mbBadImu;
+    bool mbBadImu; // 初始化阶段认为imu的参数不足以做处理，下一次LocalMapping就return了
 
     bool mbWriteStats;
 

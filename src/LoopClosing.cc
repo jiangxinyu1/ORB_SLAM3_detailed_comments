@@ -2198,7 +2198,6 @@ void LoopClosing::MergeLocal()
                     Eigen::Quaternionf Rcor = (g2oCorrectedSiw.rotation().inverse() * vNonCorrectedSim3[pKFi].rotation()).cast<float>();
                     pKFi->SetVelocity(Rcor * pKFi->GetVelocity()); // TODO: should add here scale s
                 }
-
             }
             for(MapPoint* pMPi : vpCurrentMapMPs)
             {
@@ -2213,7 +2212,6 @@ void LoopClosing::MergeLocal()
                 Eigen::Vector3d P3Dw = pMPi->GetWorldPos().cast<double>();
                 Eigen::Vector3d eigCorrectedP3Dw = g2oCorrectedSwi.map(g2oNonCorrectedSiw.map(P3Dw));
                 pMPi->SetWorldPos(eigCorrectedP3Dw.cast<float>());
-
                 pMPi->UpdateNormalAndDepth();
             }
         }
