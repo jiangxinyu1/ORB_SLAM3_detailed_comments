@@ -321,12 +321,12 @@ bool Atlas::isImuInitialized()
 bool Atlas::isImuVIBA1()
 {
   unique_lock<mutex> lock(mMutexAtlas);
-  return mpCurrentMap->isImuVIBA1();
+  return mpCurrentMap->GetIniertialBA1();
 }
 bool Atlas::isImuVIBA2()
 {
   unique_lock<mutex> lock(mMutexAtlas);
-  return mpCurrentMap->isImuVIBA2();
+  return mpCurrentMap->GetIniertialBA2();
 }
 
 

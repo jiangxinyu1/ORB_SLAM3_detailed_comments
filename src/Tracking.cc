@@ -2060,8 +2060,8 @@ bool Tracking::PredictStateIMU()
       // 速度
       Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
       // 设置当前帧的世界坐标系的相机位姿
-      // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
-      mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
+      mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+      // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
       // 记录bias
       mCurrentFrame.mImuBias = mpLastKeyFrame->GetImuBias();
       mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
@@ -2356,6 +2356,7 @@ void Tracking::Track()
       else if (mState == RECENTLY_LOST)
       {
         // ORB3 新增状态RECENTLY_LOST，主要是结合IMU看看能不能拽回来
+        std::cout << "mState into RECENTLY_LOST !!!\n";
         Verbose::PrintMess("Lost for a short time", Verbose::VERBOSITY_NORMAL);
         // bOK先置为true
         bOK = true;
@@ -2368,7 +2369,8 @@ void Tracking::Track()
           // (2) 如果超过5s，仍处于 RECENTLY_LOST 状态，标记为 LOST
           if(pCurrentMap->isImuInitialized())
           {
-            PredictStateIMUOnlyRotation();
+            // PredictStateIMUOnlyRotation();
+            PredictStateIMU();
           }
           else
           {
@@ -2573,7 +2575,7 @@ void Tracking::Track()
         bOK = TrackLocalMap();
     }
 
-    //
+
 
     // 查看到此为止时的两个状态变化
     // bOK的历史变化---上一帧跟踪成功---当前帧跟踪成功---局部地图跟踪成功---true                     -->OK   1 跟踪局部地图成功
@@ -2631,11 +2633,18 @@ void Tracking::Track()
     mAfterTrackLocalMapState = mState;
     blAfterTrackLocalMapOK = bOK;
 
-    std::cout << "Track: " << "mState = " << mState
-              << ",mAfterTrackFrameState = " << mAfterTrackFrameState
-              << ",mAfterTrackLocalMapState = " << mAfterTrackLocalMapState << "\n"
-              << "blAfterTrackFrameOK = " << blAfterTrackFrameOK
-              << ",blAfterTrackLocalMapOK = " << blAfterTrackLocalMapOK << "\n";
+    if (mState == RECENTLY_LOST || mState == LOST)
+    {
+      std::cout << "Track: " << "last frame state = " << mLastProcessedState
+                << ",state after track frame = " << mAfterTrackFrameState
+                << ",state after track map = " << mAfterTrackLocalMapState << "\n"
+                << "blAfterTrackFrameOK = " << blAfterTrackFrameOK
+                << ",blAfterTrackLocalMapOK = " << blAfterTrackLocalMapOK << "\n";
+      std::cout << "last p = " << mLastFrame.GetPose().translation() << "\n";
+      std::cout << "last v = " << mLastFrame.GetVelocity().transpose() << "\n";
+      std::cout << "p = " << mCurrentFrame.GetPose().translation() << "\n";
+      std::cout << "v = " << mCurrentFrame.GetVelocity().transpose() << "\n";
+    }
 
     // Save frame if recent relocalization, since they are used for IMU reset
     // (as we are making copy, it shluld be once mCurrFrame is completely modified)

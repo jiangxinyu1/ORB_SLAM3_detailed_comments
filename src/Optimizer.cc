@@ -3855,8 +3855,8 @@ void Optimizer::InertialOptimization(Map *pMap,
       double angle = 17.0/56.66667;
       EdgePriorGravity2 *egG2 = new EdgePriorGravity2(angle);
       egG2->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
-      double infoPriorVGDir = 1e2;
-      egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
+      // double infoPriorVGDir = 1e2;
+      // egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
       optimizer.addEdge(egG2);
     }
   }
