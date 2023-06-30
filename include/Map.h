@@ -114,6 +114,8 @@ public:
 
     void SetImuInitialized();
     bool isImuInitialized();
+    bool isImuVIBA1();
+    bool isImuVIBA2();
 
     void ApplyScaledRotation(const Sophus::SE3f &T, const float s, const bool bScaledVel=false);
 

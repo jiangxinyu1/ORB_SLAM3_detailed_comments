@@ -318,6 +318,19 @@ bool Atlas::isImuInitialized()
     return mpCurrentMap->isImuInitialized();
 }
 
+bool Atlas::isImuVIBA1()
+{
+  unique_lock<mutex> lock(mMutexAtlas);
+  return mpCurrentMap->isImuVIBA1();
+}
+bool Atlas::isImuVIBA2()
+{
+  unique_lock<mutex> lock(mMutexAtlas);
+  return mpCurrentMap->isImuVIBA2();
+}
+
+
+
 /**
  * @brief 预保存，意思是在保存成地图文件之前，要保存到对应变量里面
  */

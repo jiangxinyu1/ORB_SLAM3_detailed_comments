@@ -98,6 +98,18 @@ bool Map::isImuInitialized()
     return mbImuInitialized;
 }
 
+  bool Map::isImuVIBA1()
+  {
+    unique_lock<mutex> lock(mMutexMap);
+    return mbIMU_BA1;
+  }
+
+  bool Map::isImuVIBA2()
+  {
+    unique_lock<mutex> lock(mMutexMap);
+    return mbIMU_BA2;
+  }
+
 void Map::EraseMapPoint(MapPoint *pMP)
 {
     unique_lock<mutex> lock(mMutexMap);

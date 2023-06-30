@@ -305,7 +305,7 @@ void LocalMapping::Run()
             // (2) 条件：1、当前关键帧所在的地图完成了IMU初始化 2、正常跟踪状态
             std::cout << "debug............................... -> " << " IMU第二次初始化 InitializeIMU" << "\n";
             cout << "start VIBA 1" << endl;
-            mpCurrentKeyFrame->GetMap()->SetIniertialBA1();
+
             if (mbMonocular)
             {
               InitializeIMU(1.f, 1e5, true);
@@ -314,6 +314,7 @@ void LocalMapping::Run()
             {
               InitializeIMU(1.f, 1e5, true);
             }
+            mpCurrentKeyFrame->GetMap()->SetIniertialBA1();
             auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
             std::cout << "after VIBA 1 opt. , fetchAngle_gCam_yCam = " << a << " degree .\n"
                       << "---------------------------------------------------- scale = " << mScale  << "\n";
@@ -325,8 +326,9 @@ void LocalMapping::Run()
             // 当前关键帧所在的地图还未完成VIBA 2
             std::cout << "start VIBA 2" << endl;
             std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
-            mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
+
             InitializeIMU(0.f, 0.f, true);
+            mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
             auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
             std::cout << "after VIBA 2 opt. , fetchAngle_gCam_yCam = " << a << " degree .\n"
                       << "---------------------------------------------------- scale = " << mScale  << "\n";

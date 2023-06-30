@@ -1995,8 +1995,7 @@ bool Tracking::PredictStateIMU()
     // 速度
     Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
     // 设置当前帧的世界坐标系的相机位姿
-    // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
-    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
+    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
     // 记录bias
     mCurrentFrame.mImuBias = mpLastKeyFrame->GetImuBias();
     mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
@@ -2016,8 +2015,7 @@ bool Tracking::PredictStateIMU()
     Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaPosition(mLastFrame.mImuBias);
     Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaVelocity(mLastFrame.mImuBias);
 
-    // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
-    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
+    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
 
     mCurrentFrame.mImuBias = mLastFrame.mImuBias;
     mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
@@ -2028,6 +2026,74 @@ bool Tracking::PredictStateIMU()
 
   return false;
 }
+
+  bool Tracking::PredictStateIMUOnlyRotation()
+  {
+    if(!mCurrentFrame.mpPrevFrame)
+    {
+      Verbose::PrintMess("No last frame", Verbose::VERBOSITY_NORMAL);
+      return false;
+    }
+
+    // 总结下都在什么时候地图更新，也就是mbMapUpdated为true
+    // 1. 回环或融合
+    // 2. 局部地图LocalBundleAdjustment
+    // 3. IMU三阶段的初始化
+    // 下面的代码流程一模一样，只不过计算时相对的帧不同，地图有更新后相对于上一关键帧做的，反之相对于上一帧
+    // 地图更新后会更新关键帧与MP，所以相对于关键帧更准
+    // 而没更新的话，距离上一帧更近，计算起来误差更小
+    // 地图更新时，并且上一个图像关键帧存在
+    if(mbMapUpdated && mpLastKeyFrame)
+    {
+      const Eigen::Vector3f twb1 = mpLastKeyFrame->GetImuPosition();
+      const Eigen::Matrix3f Rwb1 = mpLastKeyFrame->GetImuRotation();
+      const Eigen::Vector3f Vwb1 = mpLastKeyFrame->GetVelocity();
+
+      const Eigen::Vector3f Gz(0, 0, -IMU::GRAVITY_VALUE);
+      const float t12 = mpImuPreintegratedFromLastKF->dT;
+
+      // 计算当前帧在世界坐标系的位姿,原理都是用预积分的位姿（预积分的值不会变化）与上一帧的位姿（会迭代变化）进行更新
+      // 旋转 R_wb2 = R_wb1 * R_b1b2
+      Eigen::Matrix3f Rwb2 = IMU::NormalizeRotation(Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaRotation(mpLastKeyFrame->GetImuBias()));
+      // 位移
+      Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1*mpImuPreintegratedFromLastKF->GetDeltaPosition(mpLastKeyFrame->GetImuBias());
+      // 速度
+      Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
+      // 设置当前帧的世界坐标系的相机位姿
+      // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+      mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
+      // 记录bias
+      mCurrentFrame.mImuBias = mpLastKeyFrame->GetImuBias();
+      mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
+      return true;
+    }
+      // 地图未更新时
+    else if(!mbMapUpdated)
+    {
+      const Eigen::Vector3f twb1 = mLastFrame.GetImuPosition();
+      const Eigen::Matrix3f Rwb1 = mLastFrame.GetImuRotation();
+      const Eigen::Vector3f Vwb1 = mLastFrame.GetVelocity();
+      const Eigen::Vector3f Gz(0, 0, -IMU::GRAVITY_VALUE);
+      // mpImuPreintegratedFrame是当前帧上一帧，不一定是关键帧
+      const float t12 = mCurrentFrame.mpImuPreintegratedFrame->dT;
+
+      Eigen::Matrix3f Rwb2 = IMU::NormalizeRotation(Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaRotation(mLastFrame.mImuBias));
+      Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaPosition(mLastFrame.mImuBias);
+      Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaVelocity(mLastFrame.mImuBias);
+
+      // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+      mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
+
+      mCurrentFrame.mImuBias = mLastFrame.mImuBias;
+      mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
+      return true;
+    }
+    else
+      cout << "not IMU prediction!!" << endl;
+
+    return false;
+  }
+
 
 void Tracking::ResetFrameIMU()
 {
@@ -2302,7 +2368,7 @@ void Tracking::Track()
           // (2) 如果超过5s，仍处于 RECENTLY_LOST 状态，标记为 LOST
           if(pCurrentMap->isImuInitialized())
           {
-            PredictStateIMU();
+            PredictStateIMUOnlyRotation();
           }
           else
           {
@@ -3535,13 +3601,14 @@ bool Tracking::TrackWithMotionModel()
 
   // Step 2：根据IMU或者恒速模型得到当前帧的初始位姿。
   if ( (mpAtlas->isImuInitialized() ) &&
+       (mpAtlas->isImuVIBA2()) &&
        (mCurrentFrame.mnId>mnLastRelocFrameId+mnFramesToResetIMU))
   {
+    // （1）IMU第一阶段初始化纯惯性优化完成（2）重定位成功已经过去1秒
     // Predict state with IMU if it is initialized and it doesnt need reset
     // IMU完成初始化 并且 距离重定位挺久不需要重置IMU，用IMU来估计位姿，没有后面的这那那这的
-    // PredictStateIMU();
-    // return true;
-    mCurrentFrame.SetPose(mVelocity * mLastFrame.GetPose());
+     PredictStateIMU();
+     return true;
   }
   else
   {

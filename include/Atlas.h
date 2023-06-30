@@ -126,7 +126,8 @@ public:
     void SetInertialSensor();
     void SetImuInitialized();
     bool isImuInitialized();
-
+    bool isImuVIBA1();
+    bool isImuVIBA2();
     // Function for garantee the correction of serialization of this object
     void PreSave();
     void PostLoad();

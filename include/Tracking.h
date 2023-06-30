@@ -216,6 +216,7 @@ protected:
     void UpdateLastFrame();
     bool TrackWithMotionModel();
     bool PredictStateIMU();
+    bool PredictStateIMUOnlyRotation();
 
     bool Relocalization();
 
