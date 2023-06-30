@@ -51,7 +51,7 @@ IMU.AccWalk: 0.000719520958062
 IMU.Frequency: 228
 
 # Do not insert KFs when recently lost
-IMU.InsertKFsWhenLost: 1
+IMU.InsertKFsWhenLost: 0
 
 # ORB Extractor: Number of features per image
 ORBextractor.nFeatures: 1500

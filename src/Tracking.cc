@@ -1991,9 +1991,11 @@ bool Tracking::PredictStateIMU()
     // 旋转 R_wb2 = R_wb1 * R_b1b2
     Eigen::Matrix3f Rwb2 = IMU::NormalizeRotation(Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaRotation(mpLastKeyFrame->GetImuBias()));
     // 位移
-    Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1*mpImuPreintegratedFromLastKF->GetDeltaPosition(mpLastKeyFrame->GetImuBias());
+    // Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1*mpImuPreintegratedFromLastKF->GetDeltaPosition(mpLastKeyFrame->GetImuBias());
+    Eigen::Vector3f twb2 = twb1 ;
     // 速度
-    Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
+    // Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
+    Eigen::Vector3f Vwb2 = Vwb1;
     // 设置当前帧的世界坐标系的相机位姿
     mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
 
@@ -2002,7 +2004,7 @@ bool Tracking::PredictStateIMU()
     mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
     return true;
   }
-    // 地图未更新时
+  // 地图未更新时
   else if(!mbMapUpdated)
   {
     const Eigen::Vector3f twb1 = mLastFrame.GetImuPosition();
@@ -2297,9 +2299,14 @@ void Tracking::Track()
           // (1) IMU模式下且IMU初始化成功，用IMU数据估计当前帧位姿
           // (2) 如果超过5s，仍处于 RECENTLY_LOST 状态，标记为 LOST
           if(pCurrentMap->isImuInitialized())
+          {
             PredictStateIMU();
+          }
           else
+          {
             bOK = false;
+          }
+
 
           // 如果IMU模式下当前帧距离跟丢帧超过5s还没有找回（time_recently_lost默认为5s）
           // 放弃了，将RECENTLY_LOST状态改为LOST
@@ -2569,6 +2576,7 @@ void Tracking::Track()
       // Load pre-integration
       pF->mpImuPreintegratedFrame = new IMU::Preintegrated(mCurrentFrame.mpImuPreintegratedFrame);
     }
+
     // 下面代码没有用
     if(pCurrentMap->isImuInitialized())
     {
@@ -2827,6 +2835,7 @@ void Tracking::StereoInitialization()
         cout << "not enough acceleration" << endl;
         return;
       }
+
       if(mpImuPreintegratedFromLastKF)
       {
         delete mpImuPreintegratedFromLastKF;
@@ -3517,8 +3526,8 @@ bool Tracking::TrackWithMotionModel()
   {
     // Predict state with IMU if it is initialized and it doesnt need reset
     // IMU完成初始化 并且 距离重定位挺久不需要重置IMU，用IMU来估计位姿，没有后面的这那那这的
-    PredictStateIMU();
-    return true;
+     PredictStateIMU();
+    // return true;
   }
   else
   {

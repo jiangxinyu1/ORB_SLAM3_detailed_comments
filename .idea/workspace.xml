@@ -25,9 +25,8 @@
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Map.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Map.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/Monocular/oak_left_vi.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Monocular/oak_left_vi.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +187,7 @@
       <workItem from="1687934295804" duration="7925000" />
       <workItem from="1687943763787" duration="4494000" />
       <workItem from="1688018118695" duration="13867000" />
-      <workItem from="1688089278477" duration="2970000" />
+      <workItem from="1688089278477" duration="4626000" />
     </task>
     <servers />
   </component>
