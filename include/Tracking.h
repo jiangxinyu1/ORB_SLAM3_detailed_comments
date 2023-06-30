@@ -128,8 +128,14 @@ public:
         OK_KLT=5
     };
 
-    eTrackingState mState;
-    eTrackingState mLastProcessedState;
+    // 记录跟踪状态
+    eTrackingState mState; // 记录实时的跟踪状态
+    eTrackingState mLastProcessedState; // 记录上一帧的跟踪状态
+    eTrackingState mAfterTrackFrameState; // 记录TrackingFrame之后的跟踪状态
+    eTrackingState mAfterTrackLocalMapState; // 记录TrackingFrame之后的跟踪状态
+
+    bool blAfterTrackFrameOK;
+    bool blAfterTrackLocalMapOK;
 
     // Input sensor
     int mSensor;

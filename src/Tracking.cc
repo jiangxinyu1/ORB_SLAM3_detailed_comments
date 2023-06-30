@@ -1991,14 +1991,12 @@ bool Tracking::PredictStateIMU()
     // 旋转 R_wb2 = R_wb1 * R_b1b2
     Eigen::Matrix3f Rwb2 = IMU::NormalizeRotation(Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaRotation(mpLastKeyFrame->GetImuBias()));
     // 位移
-    // Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1*mpImuPreintegratedFromLastKF->GetDeltaPosition(mpLastKeyFrame->GetImuBias());
-    Eigen::Vector3f twb2 = twb1 ;
+    Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1*mpImuPreintegratedFromLastKF->GetDeltaPosition(mpLastKeyFrame->GetImuBias());
     // 速度
-    // Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
-    Eigen::Vector3f Vwb2 = Vwb1;
+    Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
     // 设置当前帧的世界坐标系的相机位姿
-    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
-
+    // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
     // 记录bias
     mCurrentFrame.mImuBias = mpLastKeyFrame->GetImuBias();
     mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
@@ -2018,7 +2016,8 @@ bool Tracking::PredictStateIMU()
     Eigen::Vector3f twb2 = twb1 + Vwb1*t12 + 0.5f*t12*t12*Gz+ Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaPosition(mLastFrame.mImuBias);
     Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mCurrentFrame.mpImuPreintegratedFrame->GetDeltaVelocity(mLastFrame.mImuBias);
 
-    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+    // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+    mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
 
     mCurrentFrame.mImuBias = mLastFrame.mImuBias;
     mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
@@ -2132,9 +2131,10 @@ void Tracking::Track()
   {
     mState = NOT_INITIALIZED;
   }
+
   mLastProcessedState = mState;
 
-  // step 5 : 对IMU数据进行预积分 (IMU模式且没有创建地图的情况下)
+  // step 5 : 对IMU数据进行预积分 (IMU模式且没有创建新地图的情况下)
   // (1) 在函数内部new一个预积分类
   // (2) 对于一个帧有两种预积分，一种是相对于上一帧，一种是相对于上一个关键帧
   if ( ( mSensor == System::IMU_MONOCULAR ||
@@ -2153,6 +2153,7 @@ void Tracking::Track()
         vdIMUInteg_ms.push_back(timePreImu);
 #endif
   }
+
   // 切换创建新地图为false
   mbCreatedMap = false;
 
@@ -2206,7 +2207,6 @@ void Tracking::Track()
   }
   else
   {
-
     // step 7 : 系统成功初始化,开始跟踪(System is initialized. Track Frame.)
     // (1) 两个跟踪阶段：帧间跟踪，和 局部地图跟踪
     // (2) 两种跟踪模式：正常SLAM模式(定位+局部地图更新) 、纯定位模式
@@ -2251,6 +2251,8 @@ void Tracking::Track()
             bOK = TrackReferenceKeyFrame();  // 根据恒速模型失败了，只能根据参考关键帧来跟踪
           }
         }
+
+
 
         // step 7.3 : 如果参考关键帧跟踪和恒速模型跟踪都失败的话，设置状态 RECENTLY_LOST 或 LOST
         // (1) IMU模式下如果当前帧距离上次重定位成功不到1s，标记为 LOST
@@ -2306,8 +2308,6 @@ void Tracking::Track()
           {
             bOK = false;
           }
-
-
           // 如果IMU模式下当前帧距离跟丢帧超过5s还没有找回（time_recently_lost默认为5s）
           // 放弃了，将RECENTLY_LOST状态改为LOST
           if (mCurrentFrame.mTimeStamp - mTimeStampLost > time_recently_lost)
@@ -2319,7 +2319,7 @@ void Tracking::Track()
         }
         else
         {
-          // step 7.2 : 纯视觉模式则进行重定位，主要是BOW搜索，EPnP求解位姿
+          // step 7.2 : 纯视觉模式 则进行重定位，主要是BOW搜索，EPnP求解位姿
           bOK = Relocalization();
           if(mCurrentFrame.mTimeStamp-mTimeStampLost > 3.0f && !bOK)
           {
@@ -2457,6 +2457,10 @@ void Tracking::Track()
       }
     }
 
+
+    mAfterTrackFrameState = mState;
+    blAfterTrackFrameOK = bOK;
+
     // 将最新的关键帧作为当前帧的参考关键帧
     // mpReferenceKF先是上一时刻的参考关键帧
     // 如果当前为新关键帧则变成当前关键帧，如果不是新的关键帧则先为上一帧的参考关键帧，而后经过更新局部关键帧重新确定
@@ -2467,7 +2471,6 @@ void Tracking::Track()
     {
       mCurrentFrame.mpReferenceKF = mpReferenceKF;
     }
-
 
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_EndPosePred = std::chrono::steady_clock::now();
@@ -2557,6 +2560,16 @@ void Tracking::Track()
       // 被注释掉了，记录丢失时间
       mTimeStampLost = mCurrentFrame.mTimeStamp;
     }
+
+    // 记录 track LocalMap之后的状态
+    mAfterTrackLocalMapState = mState;
+    blAfterTrackLocalMapOK = bOK;
+
+    std::cout << "Track: " << "mState = " << mState
+              << ",mAfterTrackFrameState = " << mAfterTrackFrameState
+              << ",mAfterTrackLocalMapState = " << mAfterTrackLocalMapState << "\n"
+              << "blAfterTrackFrameOK = " << blAfterTrackFrameOK
+              << ",blAfterTrackLocalMapOK = " << blAfterTrackLocalMapOK << "\n";
 
     // Save frame if recent relocalization, since they are used for IMU reset
     // (as we are making copy, it shluld be once mCurrFrame is completely modified)
@@ -3526,8 +3539,9 @@ bool Tracking::TrackWithMotionModel()
   {
     // Predict state with IMU if it is initialized and it doesnt need reset
     // IMU完成初始化 并且 距离重定位挺久不需要重置IMU，用IMU来估计位姿，没有后面的这那那这的
-     PredictStateIMU();
+    // PredictStateIMU();
     // return true;
+    mCurrentFrame.SetPose(mVelocity * mLastFrame.GetPose());
   }
   else
   {
