@@ -2060,8 +2060,8 @@ bool Tracking::PredictStateIMU()
       // 速度
       Eigen::Vector3f Vwb2 = Vwb1 + t12*Gz + Rwb1 * mpImuPreintegratedFromLastKF->GetDeltaVelocity(mpLastKeyFrame->GetImuBias());
       // 设置当前帧的世界坐标系的相机位姿
-      mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
-      // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
+      // mCurrentFrame.SetImuPoseVelocity(Rwb2,twb2,Vwb2);
+      mCurrentFrame.SetImuPoseVelocity(Rwb2,twb1,Vwb1);
       // 记录bias
       mCurrentFrame.mImuBias = mpLastKeyFrame->GetImuBias();
       mCurrentFrame.mPredBias = mCurrentFrame.mImuBias;
