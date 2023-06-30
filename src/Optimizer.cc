@@ -3838,31 +3838,28 @@ void Optimizer::InertialOptimization(Map *pMap,
   // step 10 : 如果当前的地图，还未做纯惯性的初始化，添加重力方向的的一元约束边（由静止初始化计算得来）
   if ( !pMap->isImuInitialized() )
   {
-    const int mode = 0;
+    const int mode = 2;
 
     if ( mode == 1)
     {
       Eigen::Vector3d gravInCam (-0.015051675029098988,9.3558969497680664,-2.950098991394043);
       EdgePriorGravity *egG = new EdgePriorGravity(gravInCam);
       egG->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
-      double infoPriorGDir = 1;
-      epg->setInformation(infoPriorGDir * Eigen::Matrix3d::Identity());
+      double infoPriorGDir = 1e3;
+      egG->setInformation(infoPriorGDir * Eigen::Matrix3d::Identity());
       optimizer.addEdge(egG);
     }
-
     if ( mode == 2 )
     {
       std::cout << "First Only Imu Initialized. add Angle constraints.";
-      double angle = 20.0/56.66667;
+      double angle = 17.0/56.66667;
       EdgePriorGravity2 *egG2 = new EdgePriorGravity2(angle);
       egG2->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
-      double infoPriorVGDir = 1e3;
+      double infoPriorVGDir = 1e2;
       egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
       optimizer.addEdge(egG2);
     }
   }
-
-
 
   // step 11 ：开始优化
   // Compute error for different scalesji

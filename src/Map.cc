@@ -300,6 +300,7 @@ void Map::ApplyScaledRotation(const Sophus::SE3f &T, const float s, const bool b
         Sophus::SE3f Tyc = Tyw * Twc;
         Sophus::SE3f Tcy = Tyc.inverse();
         pKF->SetPose(Tcy);
+
         // 更新关键帧速度
         Eigen::Vector3f Vw = pKF->GetVelocity();
         if (!bScaledVel)

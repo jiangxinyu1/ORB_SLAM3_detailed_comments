@@ -186,7 +186,7 @@ void LocalMapping::Run()
                           mpCurrentKeyFrame->mPrevKF->GetCameraCenter()).norm();
 
             // 如果距离大于5厘米，记录当前KF和上一KF时间戳的差，累加到mTinit
-            if(dist > 0.05 ) // 0.005
+            if(dist > 0.02 ) // 0.05
             {
               // 说明运动基本满足要求，保证IMU是能用的，统计IMU有效激励时间
               mTinit += mpCurrentKeyFrame->mTimeStamp - mpCurrentKeyFrame->mPrevKF->mTimeStamp;
@@ -197,7 +197,7 @@ void LocalMapping::Run()
             {
               // Note : 认为对于IMU初始化来说，运动不够 ！！！
               // 如果累计时间差小于10s 并且 距离小于2厘米，认为运动幅度太小，不足以初始化IMU，将mbBadImu设置为true
-              if((mTinit < 10.f) && (dist<0.02)) // 0.00001
+              if((mTinit < 10.f) && (dist<0.0002)) // 0.00001
               {
                 // 在跟踪线程里会重置当前活跃地图
                 cout << "Not enough motion for initializing. Reseting..." << endl;
@@ -215,7 +215,7 @@ void LocalMapping::Run()
                           ((mpTracker->GetMatchesInliers()>100)&&!mbMonocular);
 
             // 局部地图+IMU一起优化，优化关键帧位姿、地图点、IMU参数
-            std::cout << "debug............................... -> " << " 局部地图+IMU-BA LocalInertialBA" << "\n";
+            std::cout  << " 局部地图+IMU-BA LocalInertialBA . \n" ;
             Optimizer::LocalInertialBA(mpCurrentKeyFrame,
                                        &mbAbortBA,
                                        mpCurrentKeyFrame->GetMap(),
@@ -315,28 +315,21 @@ void LocalMapping::Run()
               InitializeIMU(1.f, 1e5, true);
             }
             auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
-            std::cout << "after VIBA 1 opt. , fetchAngle_gCam_yCam = " << a << "degree .\n"
-                      << "--------------------------------------scale = " << mScale  << "\n";
+            std::cout << "after VIBA 1 opt. , fetchAngle_gCam_yCam = " << a << " degree .\n"
+                      << "---------------------------------------------------- scale = " << mScale  << "\n";
             cout << "end VIBA 1" << endl;
           }
-          else if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2() && (mTinit>15.0f))
+          else if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2() && (mTinit>10.0f)) // 15
           {
             // Step 9.2 根据条件判断是否进行VIBA2（IMU第三次初始化）
             // 当前关键帧所在的地图还未完成VIBA 2
             std::cout << "start VIBA 2" << endl;
             std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
             mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
-            if (mbMonocular)
-            {
-              InitializeIMU(0.f, 0.f, true);
-            }
-            else
-            {
-              InitializeIMU(0.f, 0.f, true);
-            }
+            InitializeIMU(0.f, 0.f, true);
             auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
-            std::cout << "after VIBA 2 opt. , fetchAngle_gCam_yCam = " << a << "degree .\n"
-                      << "--------------------------------------scale = " << mScale  << "\n";
+            std::cout << "after VIBA 2 opt. , fetchAngle_gCam_yCam = " << a << " degree .\n"
+                      << "---------------------------------------------------- scale = " << mScale  << "\n";
             cout << "end VIBA 2" << endl;
           }
 
@@ -1569,27 +1562,29 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
 {
   // 1. 将所有关键帧放入列表及向量里，且查看是否满足初始化条件
   if (mbResetRequested)
+  {
     return;
+  }
 
+  // step 1 : 判断条件，从时间及帧数上限制初始化，不满足下面的不进行初始化
   float minTime;
   int nMinKF;
-  // 从时间及帧数上限制初始化，不满足下面的不进行初始化
   if (mbMonocular){
     minTime = 2.0;
     nMinKF = 10;
   }else{
-    minTime = 1.0;
+    minTime = 1.0; // 保证参与优化有足够的数据
     nMinKF = 10;
   }
+
   // 当前地图大于10帧才进行初始化
   if(mpAtlas->KeyFramesInMap() < nMinKF )
   {
-    std::cout << " just " << mpAtlas->KeyFramesInMap() <<  " keyFrame , < 10 , continue ...\n";
+    std::cout << " Just " << mpAtlas->KeyFramesInMap() <<  " keyFrame , < 10 , continue ...\n";
     return;
   }
 
-  // Retrieve all keyframe in temporal order
-  // 按照顺序存放目前地图里的关键帧，顺序按照前后顺序来，包括当前关键帧
+  // step 2 : 按照顺序存放目前地图里的关键帧，顺序按照前后顺序来，包括当前关键帧
   list<KeyFrame*> lpKF;
   KeyFrame* pKF = mpCurrentKeyFrame;
   while(pKF->mPrevKF)
@@ -1610,11 +1605,11 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     return;
   }
 
-
+  // step 3 : 把Tracking发来的keyFrame，未处理的处理掉
   // 正在做IMU的初始化，在tracking里面使用，如果为true，暂不添加关键帧
   bInitializing = true;
 
-  // 先处理新关键帧，防止堆积且保证数据量充足
+  // 把Tracking发来的keyFrame，未处理的处理掉。先处理新关键帧，防止堆积且保证数据量充足
   while(CheckNewKeyFrames())
   {
     ProcessNewKeyFrame();
@@ -1622,18 +1617,20 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     lpKF.push_back(mpCurrentKeyFrame);
   }
 
-  // 2. 正式IMU初始化
+  // step 4 : 正式IMU初始化
   const int N = vpKF.size();
-  IMU::Bias b(0,0,0,0,0,0);
+  IMU::Bias b(0,0,0,0,0,0); // 最开始偏置的初值设置为0 （论文中一致）
 
+  // step 4.1 : 设置优化的初值
   // 给定优化的初值-速度-重力方向 Compute and KF velocities mRwg init estimation
+  // 在IMU连一次初始化都没有做的情况下，通过速度计算
   if (!mpCurrentKeyFrame->GetMap()->isImuInitialized())
   {
-    // 在IMU连一次初始化都没有做的情况下，通过速度计算
-    Eigen::Matrix3f Rwg;
+    Eigen::Matrix3f Rwg; // w第一帧图像坐标系，g重力坐标系
     Eigen::Vector3f dirG;
     dirG.setZero();
     int have_imu_num = 0;
+    // 每一段关于速度的预积分，角度乘上
     for(vector<KeyFrame*>::iterator itKF = vpKF.begin(); itKF!=vpKF.end(); itKF++)
     {
       // 此关键帧没有预积分信息或者没有上一个关键帧，跳过
@@ -1655,6 +1652,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
       return;
     }
     // dirG = sV1 - sVn + n*Rwg*g*t
+    //
     // 归一化，约等于重力在世界坐标系下的方向
     dirG = dirG/dirG.norm();
     // 原本的重力方向
@@ -1678,7 +1676,9 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   }
   else
   {
+    // 如果做过纯惯性初始化了，初值就设置为单位阵了（对齐过了的）
     mRwg = Eigen::Matrix3d::Identity();
+    // 第二次初始化的话，偏置的初值就是当前关键帧的偏置了
     mbg = mpCurrentKeyFrame->GetGyroBias().cast<double>();
     mba = mpCurrentKeyFrame->GetAccBias().cast<double>();
   }
@@ -1687,11 +1687,12 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   mScale = 1;
 
   // 暂时没发现在别的地方出现过
-  mInitTime = mpTracker->mLastFrame.mTimeStamp-vpKF.front()->mTimeStamp;
+  mInitTime = mpTracker->mLastFrame.mTimeStamp - vpKF.front()->mTimeStamp;
 
+  // step 4.2 : 纯惯性的初始化优化
   std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
   // 3. 计算残差及偏置差，优化尺度重力方向及速度偏置，偏置先验为0，双目时不优化尺度
-  std::cout << "debug............................... -> " << " 纯惯性初始化 " << "\n";
+  std::cout << "debug...... -> " << " 纯惯性初始化 " << "\n";
 //  ORB_SLAM3::IMU::blStaticInitSuccess
   Eigen::Vector3d gCamPrior = ORB_SLAM3::IMU::gravInCam0FromStaticInit.cast<double>();
   Optimizer::InertialOptimization(mpAtlas->GetCurrentMap(),
@@ -1707,6 +1708,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
                                   false,
                                   priorG,
                                   priorA);
+
   std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
   // 尺度太小的话初始化认为失败
@@ -1717,11 +1719,14 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     return;
   }
 
-  std::cout << "************************** imu first init sucess ****************************** \n";
+
+  std::cout << "************ IMU初始化-纯惯性优化完成 ***********\n";
   std::cout << "mRwg after = \n" << mRwg << "\n";
   std::cout << "mScale = " << mScale <<  "\n";
   auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
-  std::cout << "only imu first opt. , fetchAngle_gCam_yCam = " << a << "degree .\n";
+  std::cout << "only imu opt. , fetchAngle_gCam_yCam = " << a << "degree .\n";
+
+  // step 4.3 : 恢复重力方向与尺度信息
 
   // Before this line we are not changing the map
   {
@@ -1732,9 +1737,13 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     {
       // 4.1 恢复重力方向与尺度信息
       Sophus::SE3f Twg(mRwg.cast<float>().transpose(), Eigen::Vector3f::Zero());
-      mpAtlas->GetCurrentMap()->ApplyScaledRotation(Twg, mScale, true);
+      mpAtlas->GetCurrentMap()->ApplyScaledRotation(Twg,
+                                                    mScale,
+                                                    true);
       // 4.2 更新普通帧的位姿，主要是当前帧与上一帧
-      mpTracker->UpdateFrameIMU(mScale, vpKF[0]->GetImuBias(), mpCurrentKeyFrame);
+      mpTracker->UpdateFrameIMU(mScale,
+                                vpKF[0]->GetImuBias(),
+                                mpCurrentKeyFrame);
     }
 
     // Check if initialization OK
@@ -1769,8 +1778,9 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   // 代码里都为true
   if (bFIBA)
   {
-    std::cout << "debug............................... -> " << " 联合初始化 FullInertialBA" << "\n";
-    // 5. 承接上一步纯imu优化，按照之前的结果更新了尺度信息及适应重力方向，所以要结合地图进行一次视觉加imu的全局优化，这次带了MP等信息
+    std::cout << "debug.....-> " << " 联合初始化 FullInertialBA" << "\n";
+    // 5. 承接上一步纯imu优化，按照之前的结果更新了尺度信息及适应重力方向，
+    // 所以要结合地图进行一次视觉加imu的全局优化，这次带了MP等信息
     // ! 1.0版本里面不直接赋值了，而是将所有优化后的信息保存到变量里面
     if (priorA!=0.f)
       Optimizer::FullInertialBA(mpAtlas->GetCurrentMap(),
@@ -1790,6 +1800,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
                                 false);
   }
 
+  std::cout << "************ IMU初始化-联合优化完成 ***********\n";
   std::chrono::steady_clock::time_point t5 = std::chrono::steady_clock::now();
 
   Verbose::PrintMess("Global Bundle Adjustment finished\nUpdating map ...", Verbose::VERBOSITY_NORMAL);
