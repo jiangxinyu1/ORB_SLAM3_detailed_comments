@@ -186,7 +186,7 @@ void LocalMapping::Run()
                           mpCurrentKeyFrame->mPrevKF->GetCameraCenter()).norm();
 
             // 如果距离大于5厘米，记录当前KF和上一KF时间戳的差，累加到mTinit
-            if(dist > 0.01 ) // 0.05
+            if(dist > 0.02 ) // 0.05
             {
               // 说明运动基本满足要求，保证IMU是能用的，统计IMU有效激励时间
               mTinit += mpCurrentKeyFrame->mTimeStamp - mpCurrentKeyFrame->mPrevKF->mTimeStamp;
@@ -198,7 +198,7 @@ void LocalMapping::Run()
               // Note : 认为对于IMU初始化来说，运动不够 ！！！
               // 如果累计时间差小于10s 并且 距离小于2厘米，认为运动幅度太小，不足以初始化IMU，将mbBadImu设置为true
               // 关键帧之间
-              if((mTinit < 10.f) && (dist<0.0002)) // 0.00001
+              if((mTinit < 10.f) && (dist<0.01)) // 0.00001
               {
                 // 在跟踪线程里会重置当前活跃地图
                 cout << "Not enough motion for initializing. Reseting..." << endl;
@@ -216,7 +216,7 @@ void LocalMapping::Run()
                           ((mpTracker->GetMatchesInliers()>100)&&!mbMonocular);
 
             // 局部地图+IMU一起优化，优化关键帧位姿、地图点、IMU参数
-            std::cout  << " 局部地图+IMU-BA LocalInertialBA . \n" ;
+            // std::cout  << " 局部地图+IMU-BA LocalInertialBA . \n" ;
             Optimizer::LocalInertialBA(mpCurrentKeyFrame,
                                        &mbAbortBA,
                                        mpCurrentKeyFrame->GetMap(),
@@ -1686,8 +1686,9 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
     mba = mpCurrentKeyFrame->GetAccBias().cast<double>();
   }
 
-  // 设置 scale 的初值
-  mScale = 1;
+
+    mScale = 1;
+
 
   // 暂时没发现在别的地方出现过
   mInitTime = mpTracker->mLastFrame.mTimeStamp - vpKF.front()->mTimeStamp;

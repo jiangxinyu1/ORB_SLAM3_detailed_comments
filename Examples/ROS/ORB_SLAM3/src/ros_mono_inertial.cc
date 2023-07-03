@@ -78,6 +78,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "Mono_Inertial");
   ros::NodeHandle n("~");
   ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
+
   bool bEqual = false;
   if(argc < 3 || argc > 4)
   {
@@ -228,6 +229,11 @@ void ImageGrabber::SyncWithImu()
           cv::Point3f gyr(mpImuGb->imuBuf.front()->angular_velocity.x,
                           mpImuGb->imuBuf.front()->angular_velocity.y,
                           mpImuGb->imuBuf.front()->angular_velocity.z);
+          if ( t > tIm)
+          {
+            // 避免补偿后，imu的时间戳大于图像时间戳
+            break;
+          }
           vImuMeas.push_back(ORB_SLAM3::IMU::Point(acc,gyr,t));
           mpImuGb->imuBuf.pop();
         }

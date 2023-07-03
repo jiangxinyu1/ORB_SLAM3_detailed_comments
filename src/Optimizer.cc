@@ -3838,7 +3838,7 @@ void Optimizer::InertialOptimization(Map *pMap,
   // step 10 : 如果当前的地图，还未做纯惯性的初始化，添加重力方向的的一元约束边（由静止初始化计算得来）
   if ( !pMap->isImuInitialized() )
   {
-    const int mode = 2;
+    const int mode = 0;
 
     if ( mode == 1)
     {

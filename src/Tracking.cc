@@ -2640,10 +2640,10 @@ void Tracking::Track()
                 << ",state after track map = " << mAfterTrackLocalMapState << "\n"
                 << "blAfterTrackFrameOK = " << blAfterTrackFrameOK
                 << ",blAfterTrackLocalMapOK = " << blAfterTrackLocalMapOK << "\n";
-      std::cout << "last p = " << mLastFrame.GetPose().translation() << "\n";
-      std::cout << "last v = " << mLastFrame.GetVelocity().transpose() << "\n";
-      std::cout << "p = " << mCurrentFrame.GetPose().translation() << "\n";
-      std::cout << "v = " << mCurrentFrame.GetVelocity().transpose() << "\n";
+//      std::cout << "last p = " << mLastFrame.GetPose().translation() << "\n";
+//      std::cout << "last v = " << mLastFrame.GetVelocity().transpose() << "\n";
+//      std::cout << "p = " << mCurrentFrame.GetPose().translation() << "\n";
+//      std::cout << "v = " << mCurrentFrame.GetVelocity().transpose() << "\n";
     }
 
     // Save frame if recent relocalization, since they are used for IMU reset
