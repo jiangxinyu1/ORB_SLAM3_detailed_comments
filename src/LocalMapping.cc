@@ -198,7 +198,7 @@ void LocalMapping::Run()
               // Note : 认为对于IMU初始化来说，运动不够 ！！！
               // 如果累计时间差小于10s 并且 距离小于2厘米，认为运动幅度太小，不足以初始化IMU，将mbBadImu设置为true
               // 关键帧之间
-              if((mTinit < 10.f) && (dist<0.01)) // 0.00001
+              if((mTinit < 10.f) && (dist<0.0000001)) // 0.00001
               {
                 // 在跟踪线程里会重置当前活跃地图
                 cout << "Not enough motion for initializing. Reseting..." << endl;
@@ -328,7 +328,7 @@ void LocalMapping::Run()
             std::cout << "start VIBA 2" << endl;
             std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
 
-            InitializeIMU(0.f, 0.f, true);
+            // InitializeIMU(0.f, 0.f, true);
             mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
             auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
             std::cout << "after VIBA 2 opt. , fetchAngle_gCam_yCam = " << a << " degree .\n"
@@ -338,7 +338,7 @@ void LocalMapping::Run()
 
           // scale refinement
           // Step 9.3 在关键帧小于100时，每隔着10s进行一次尺度、重力方向优化
-          if ( ((mpAtlas->KeyFramesInMap())<=100) &&
+          if ( ((mpAtlas->KeyFramesInMap())<=1) &&
                (mbMonocular) &&  // 单目VIO
                ((mTinit>25.0f && mTinit<25.5f)||
                (mTinit>35.0f && mTinit<35.5f)||
