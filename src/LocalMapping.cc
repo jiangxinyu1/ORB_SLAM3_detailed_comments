@@ -328,7 +328,7 @@ void LocalMapping::Run()
             std::cout << "start VIBA 2" << endl;
             std::cout << "debug............................... -> " << " IMU第三次初始化 InitializeIMU" << "\n";
 
-            // InitializeIMU(0.f, 0.f, true);
+            InitializeIMU(0.f, 0.f, true);
             mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
             auto a = ORB_SLAM3::IMU::fetchAngle_gCam_yCam(mRwg);
             std::cout << "after VIBA 2 opt. , fetchAngle_gCam_yCam = " << a << " degree .\n"
@@ -1687,7 +1687,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   }
 
 
-    mScale = 1;
+  mScale = 1;
 
 
   // 暂时没发现在别的地方出现过
@@ -1707,9 +1707,9 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
                                   mbMonocular,
                                   infoInertial,
                                   gravInCam,
-                                  true,
-                                  false,
-                                  false,
+                                  true,  // blConstrition g
+                                  false,  // fixed vel
+                                  false, // not use
                                   priorG,
                                   priorA);
 
@@ -1718,11 +1718,10 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   // 尺度太小的话初始化认为失败
   if (mScale<1e-1)
   {
-    cout << "scale too small" << endl;
+    std::cout << "Error !!!  scale too small . scale = " <<  mScale << endl;
     bInitializing=false;
     return;
   }
-
 
   std::cout << "************ IMU初始化-纯惯性优化完成 ***********\n";
   std::cout << "mRwg after = \n" << mRwg << "\n";

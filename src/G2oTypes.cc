@@ -725,7 +725,12 @@ void EdgeInertialGS::computeError()
   const VertexVelocity* VV2 = static_cast<const VertexVelocity*>(_vertices[5]);
   const VertexGDir* VGDir = static_cast<const VertexGDir*>(_vertices[6]);
   const VertexScale* VS = static_cast<const VertexScale*>(_vertices[7]);
-  const IMU::Bias b(VA->estimate()[0],VA->estimate()[1],VA->estimate()[2],VG->estimate()[0],VG->estimate()[1],VG->estimate()[2]);
+  const IMU::Bias b(VA->estimate()[0],
+                    VA->estimate()[1],
+                    VA->estimate()[2],
+                    VG->estimate()[0],
+                    VG->estimate()[1],
+                    VG->estimate()[2]);
   g = VGDir->estimate().Rwg*gI;
   const double s = VS->estimate();
   const Eigen::Matrix3d dR = mpInt->GetDeltaRotation(b).cast<double>();
@@ -737,7 +742,6 @@ void EdgeInertialGS::computeError()
   const Eigen::Vector3d er = LogSO3(dR.transpose()*VP1->estimate().Rwb.transpose()*VP2->estimate().Rwb);
   const Eigen::Vector3d ev = VP1->estimate().Rwb.transpose()*(s*(VV2->estimate() - VV1->estimate()) - g*dt) - dV;
   const Eigen::Vector3d ep = VP1->estimate().Rwb.transpose()*(s*(VP2->estimate().twb - VP1->estimate().twb - VV1->estimate()*dt) - g*dt*dt/2) - dP;
-
   _error << er, ev, ep;
 }
 

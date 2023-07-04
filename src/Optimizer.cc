@@ -1098,9 +1098,9 @@ int Optimizer::PoseInertialOptimizationLastFrame(Frame *pFrame, bool bRecInit)
           // 将对应的特征点索引加入vnIndexEdgeMono
           vnIndexEdgeMono.push_back(i);
         }
-          // Stereo observation
         else if (!bRight)
         {
+          // Stereo observation
           nInitialStereoCorrespondences++;
           pFrame->mvbOutlier[i] = false;
 
@@ -3781,7 +3781,7 @@ void Optimizer::InertialOptimization(Map *pMap,
   optimizer.addEdge(epg);
 
   // IMU links with gravity and scale
-  // 6. imu信息链接重力方向与尺度信息
+  // 6. Imu信息链接重力方向与尺度信息
   vector<EdgeInertialGS *> vpei;  // 后面虽然加入了边，但是没有用到，应该调试用的
   vpei.reserve(vpKFs.size());
   vector<pair<KeyFrame *, KeyFrame *>> vppUsedKF;
@@ -3850,7 +3850,7 @@ void Optimizer::InertialOptimization(Map *pMap,
     }
     if ( mode == 2 )
     {
-      std::cout << "First Only Imu Initialized. add Angle constraints.";
+      std::cout << "First Only Imu Initialized. add Angle constraints.\n";
       double angle = 17.0/56.66667;
       EdgePriorGravity2 *egG2 = new EdgePriorGravity2(angle);
       egG2->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));

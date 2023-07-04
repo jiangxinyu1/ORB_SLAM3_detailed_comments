@@ -2356,7 +2356,6 @@ void Tracking::Track()
       else if (mState == RECENTLY_LOST)
       {
         // ORB3 新增状态RECENTLY_LOST，主要是结合IMU看看能不能拽回来
-        std::cout << "mState into RECENTLY_LOST !!!\n";
         Verbose::PrintMess("Lost for a short time", Verbose::VERBOSITY_NORMAL);
         // bOK先置为true
         bOK = true;
@@ -2633,18 +2632,25 @@ void Tracking::Track()
     mAfterTrackLocalMapState = mState;
     blAfterTrackLocalMapOK = bOK;
 
-    if (mState == RECENTLY_LOST || mState == LOST)
+
+    static auto last_mState = mState;
+    if ( last_mState != mState )
     {
+      std::cout << "\n >>>>>>>>>>>>>>>>>>>>>>>>>>> Track State Change ! <<<<<<<<<<<<<<<<<<<<<<<< \n";
       std::cout << "Track: " << "last frame state = " << mLastProcessedState
                 << ",state after track frame = " << mAfterTrackFrameState
                 << ",state after track map = " << mAfterTrackLocalMapState << "\n"
                 << "blAfterTrackFrameOK = " << blAfterTrackFrameOK
                 << ",blAfterTrackLocalMapOK = " << blAfterTrackLocalMapOK << "\n";
-//      std::cout << "last p = " << mLastFrame.GetPose().translation() << "\n";
-//      std::cout << "last v = " << mLastFrame.GetVelocity().transpose() << "\n";
-//      std::cout << "p = " << mCurrentFrame.GetPose().translation() << "\n";
-//      std::cout << "v = " << mCurrentFrame.GetVelocity().transpose() << "\n";
+      std::cout << "last p = " << mLastFrame.GetPose().translation().transpose() << "\n";
+      std::cout << "last v = " << mLastFrame.GetVelocity().transpose() << "\n";
+      std::cout << "p = " << mCurrentFrame.GetPose().translation().transpose() << "\n";
+      std::cout << "v = " << mCurrentFrame.GetVelocity().transpose() << "\n";
+      std::cout << "translation last curr = "
+                << (mLastFrame.GetPose().translation() - mCurrentFrame.GetPose().translation()).norm()
+                << "\n";
     }
+    last_mState = mState;
 
     // Save frame if recent relocalization, since they are used for IMU reset
     // (as we are making copy, it shluld be once mCurrFrame is completely modified)

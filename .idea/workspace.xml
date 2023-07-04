@@ -25,13 +25,10 @@
   <component name="ChangeListManager">
     <list default="true" id="83b61f2d-35a8-4b21-9727-a39834294986" name="变更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/ROS/ORB_SLAM3/src/ros_mono_inertial.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/ImuTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/ImuTypes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/static_imu_init.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/static_imu_init.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImuTypes.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImuTypes.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/G2oTypes.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/G2oTypes.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LocalMapping.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/LocalMapping.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Optimizer.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/static_imu_init.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/static_imu_init.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Tracking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tracking.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -196,7 +193,7 @@
       <workItem from="1688105612145" duration="17308000" />
       <workItem from="1688354930302" duration="819000" />
       <workItem from="1688363371632" duration="7074000" />
-      <workItem from="1688449739923" duration="3693000" />
+      <workItem from="1688449739923" duration="15404000" />
     </task>
     <servers />
   </component>
@@ -219,6 +216,17 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Optimizer.cc</url>
+          <line>4080</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
