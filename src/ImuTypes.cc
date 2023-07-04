@@ -31,8 +31,7 @@ namespace IMU
 
 const float eps = 1e-4;
 
-bool blStaticInitSuccess = false;
-Eigen::Vector3f gravInCam0FromStaticInit (0,0,0);
+
 
 /**
  * @brief 强制让R变成一个正交矩阵

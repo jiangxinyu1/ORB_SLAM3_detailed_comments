@@ -1,12 +1,5 @@
-//
-// Created by xiang on 2021/11/11.
-//
 
 #include "static_imu_init.h"
-
-
-
-namespace sad {
 
 bool StaticIMUInit::AddIMU(const ORB_SLAM3::IMU::Point& imu)
 {
@@ -29,7 +22,7 @@ bool StaticIMUInit::AddIMU(const ORB_SLAM3::IMU::Point& imu)
     init_imu_deque_.push_back(imu);
     // 初始化经过时间
     double init_time = imu.t - init_start_time_;
-    std::cout << "init_time= " << init_time << ",Dont move !!! \n";
+    std::cout << "init_time= " << init_time << ", Dont move !!! \n";
     if (init_time > options_.init_time_seconds_) 
     {
       // 尝试初始化逻辑
@@ -128,8 +121,6 @@ bool StaticIMUInit::TryInit()
               << "\n 验证 ：Rcw_ = \n" << Rcw_
               << "\n 验证：(Rcw_*gravInWorld ?= gravInCam) = \n"<<  Rcw_ * gravInWorld << "\n";
 
-    ORB_SLAM3::IMU::gravInCam0FromStaticInit = gravInCam;
-    ORB_SLAM3::IMU::blStaticInitSuccess = true;
     init_success_ = true;
     return true;
 }
@@ -147,5 +138,3 @@ void StaticIMUInit::ComputeMeanAndCovDiag(const std::deque<ORB_SLAM3::IMU::Point
   mean_acc /= len;
   mean_gyro /= len;
 }
-
-}  // namespace sad

@@ -26,8 +26,10 @@
 #include<mutex>
 
 #include<ros/ros.h>
+#include<ros/time.h>
 #include<cv_bridge/cv_bridge.h>
 #include<sensor_msgs/Imu.h>
+#include <ros/impl/time.h>
 
 #include<opencv2/core/core.hpp>
 
@@ -55,13 +57,13 @@ public:
                  ImuGrabber *pImuGb,
                  const bool bClahe): mpSLAM(pSLAM), mpImuGb(pImuGb), mbClahe(bClahe){}
 
-    void GrabImage(const sensor_msgs::ImageConstPtr& msg);
-    cv::Mat GetImage(const sensor_msgs::ImageConstPtr &img_msg);
+    void GrabImage(const sensor_msgs::ImagePtr& msg);
+    cv::Mat GetImage(const sensor_msgs::ImagePtr &img_msg);
     void SyncWithImu();
     void InitImu();
 
     // 存储图像的双端队列
-    std::queue<sensor_msgs::ImageConstPtr> img0Buf;
+    std::queue<sensor_msgs::ImagePtr> img0Buf;
     std::mutex mBufMutex;
    
     ORB_SLAM3::System* mpSLAM;
@@ -118,16 +120,16 @@ int main(int argc, char **argv)
                                          &ImageGrabber::GrabImage,
                                          &igb);
   std::thread sync_thread(&ImageGrabber::SyncWithImu,&igb);
-
   std::thread imu_init_thread(&ImageGrabber::InitImu,&igb);
-
-
   ros::spin();
   return 0;
 }
 
-void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr &img_msg)
+void ImageGrabber::GrabImage(const sensor_msgs::ImagePtr &img_msg)
 {
+  // 时间戳补偿
+  double t = img_msg->header.stamp.toSec() - 0.066;
+  img_msg->header.stamp = ros::Time().fromSec(t);
   // 如果图像队列非空，会直接丢弃最老的图像，然后把最新的图像塞进去
   mBufMutex.lock();
   if (!img0Buf.empty())
@@ -145,7 +147,7 @@ void ImageGrabber::GrabImage(const sensor_msgs::ImageConstPtr &img_msg)
  * @param img_msg
  * @return
  */
-cv::Mat ImageGrabber::GetImage(const sensor_msgs::ImageConstPtr &img_msg)
+cv::Mat ImageGrabber::GetImage(const sensor_msgs::ImagePtr &img_msg)
 {
   // Copy the ros image message to cv::Mat.
   cv_bridge::CvImageConstPtr cv_ptr;
@@ -219,21 +221,15 @@ void ImageGrabber::SyncWithImu()
          * imu:  /=======---------/
          */
         while( !mpImuGb->imuBuf.empty() &&
-               mpImuGb->imuBuf.front()->header.stamp.toSec() <= tIm )
+                mpImuGb->imuBuf.front()->header.stamp.toSec() <= tIm )
         {
-          // todo ： 时间补偿 该值由 kalibr 的标定报告给出
-          double t = mpImuGb->imuBuf.front()->header.stamp.toSec() + 0.066;
+          double t = mpImuGb->imuBuf.front()->header.stamp.toSec() ;
           cv::Point3f acc(mpImuGb->imuBuf.front()->linear_acceleration.x,
                           mpImuGb->imuBuf.front()->linear_acceleration.y,
                           mpImuGb->imuBuf.front()->linear_acceleration.z);
           cv::Point3f gyr(mpImuGb->imuBuf.front()->angular_velocity.x,
                           mpImuGb->imuBuf.front()->angular_velocity.y,
                           mpImuGb->imuBuf.front()->angular_velocity.z);
-          if ( t > tIm)
-          {
-            // 避免补偿后，imu的时间戳大于图像时间戳
-            break;
-          }
           vImuMeas.push_back(ORB_SLAM3::IMU::Point(acc,gyr,t));
           mpImuGb->imuBuf.pop();
         }
@@ -269,7 +265,7 @@ void ImuGrabber::GrabImu(const sensor_msgs::ImuConstPtr &imu_msg)
 
 void ImageGrabber::InitImu()
 {
-  sad::StaticIMUInit imu_init;
+  StaticIMUInit imu_init;
   while(1)
   {
     if ( ! imu_init.InitSuccess() )
@@ -278,7 +274,7 @@ void ImageGrabber::InitImu()
       while ( !mpImuGb->imuBufForInit.empty() )
       {
         // 通过kalibr标定OAK相机，需要做时间补偿
-        double t = (mpImuGb->imuBufForInit.front()->header.stamp.toSec()+ 0.066);
+        double t = (mpImuGb->imuBufForInit.front()->header.stamp.toSec());
         cv::Point3f acc(mpImuGb->imuBufForInit.front()->linear_acceleration.x,
                         mpImuGb->imuBufForInit.front()->linear_acceleration.y,
                         mpImuGb->imuBufForInit.front()->linear_acceleration.z);

@@ -42,8 +42,7 @@ namespace IMU
 
 const float GRAVITY_VALUE=9.81;
 
-extern bool blStaticInitSuccess;
-extern Eigen::Vector3f gravInCam0FromStaticInit;
+
 
 //IMU measurement (gyro, accelerometer and timestamp)
 class Point

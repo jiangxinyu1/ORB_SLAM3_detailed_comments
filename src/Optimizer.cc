@@ -3842,8 +3842,7 @@ void Optimizer::InertialOptimization(Map *pMap,
 
     if ( mode == 1)
     {
-      Eigen::Vector3d gravInCam (-0.015051675029098988,9.3558969497680664,-2.950098991394043);
-      EdgePriorGravity *egG = new EdgePriorGravity(gravInCam);
+      EdgePriorGravity *egG = new EdgePriorGravity(gInCam);
       egG->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
       double infoPriorGDir = 1e3;
       egG->setInformation(infoPriorGDir * Eigen::Matrix3d::Identity());
@@ -3855,8 +3854,8 @@ void Optimizer::InertialOptimization(Map *pMap,
       double angle = 17.0/56.66667;
       EdgePriorGravity2 *egG2 = new EdgePriorGravity2(angle);
       egG2->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex *>(VGDir));
-      // double infoPriorVGDir = 1e2;
-      // egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
+      double infoPriorVGDir = 1;
+      egG2->setInformation(infoPriorVGDir * Eigen::Matrix<double,1,1>::Identity());
       optimizer.addEdge(egG2);
     }
   }

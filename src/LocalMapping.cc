@@ -1697,8 +1697,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
   std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
   // 3. 计算残差及偏置差，优化尺度重力方向及速度偏置，偏置先验为0，双目时不优化尺度
   std::cout << "debug...... -> " << " 纯惯性初始化 " << "\n";
-//  ORB_SLAM3::IMU::blStaticInitSuccess
-  Eigen::Vector3d gCamPrior = ORB_SLAM3::IMU::gravInCam0FromStaticInit.cast<double>();
+
+  Eigen::Vector3d gravInCam (-0.015051675029098988,9.3558969497680664,-2.950098991394043);
   Optimizer::InertialOptimization(mpAtlas->GetCurrentMap(),
                                   mRwg,
                                   mScale,
@@ -1706,8 +1706,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
                                   mba,
                                   mbMonocular,
                                   infoInertial,
-                                  gCamPrior,
-                                  ORB_SLAM3::IMU::blStaticInitSuccess,
+                                  gravInCam,
+                                  true,
                                   false,
                                   false,
                                   priorG,
